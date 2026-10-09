@@ -31,8 +31,8 @@
   /* 运行时报错自检：页面脚本一旦抛错，就在顶部显示一条提示条，
      避免出现"点了没反应、用户完全不知道哪里坏了"的情况。
      正式展示时若无报错，这个条不会出现。 */
-  function initErrorReporter() {
-    function show(msg, where) {
+  function reportError(msg, where) {
+    try {
       var bar = $('#errBar');
       if (!bar) {
         bar = document.createElement('div');
@@ -44,13 +44,26 @@
       bar.innerHTML = '<b>页面脚本执行出错</b><span>' + msg +
         (where ? '（' + where + '）' : '') + '</span>' +
         '<button type="button" onclick="this.parentNode.remove()">知道了</button>';
-    }
+    } catch (err) { /* 报错条自身出错就静默，绝不二次抛出 */ }
+  }
+
+  function initErrorReporter() {
     window.addEventListener('error', function (ev) {
-      show(String(ev.message || '未知错误'), (ev.filename || '').split('/').pop() + ':' + (ev.lineno || '?'));
+      reportError(String(ev.message || '未知错误'),
+        (ev.filename || '').split('/').pop() + ':' + (ev.lineno || '?'));
     });
     window.addEventListener('unhandledrejection', function (ev) {
-      show('Promise 未捕获异常：' + (ev.reason && ev.reason.message ? ev.reason.message : ev.reason));
+      reportError('Promise 未捕获异常：' +
+        (ev.reason && ev.reason.message ? ev.reason.message : ev.reason));
     });
+  }
+
+  /* 兜底显示：把所有 .reveal 元素强制点亮。
+     预览面板、整页截图、打印 PDF 时不会触发出场动画，
+     若不兜底，屏外内容会长期停在半透明状态（曾导致答题选项"看不清"）。 */
+  function forceRevealAll() {
+    var els = $$('.reveal');
+    els.forEach(function (el) { el.classList.add('is-visible'); });
   }
 
   /* ============================================================
@@ -1315,6 +1328,10 @@
         close();
       });
     });
+
+    /* 初始化结束时强制关闭一次：确保页面一打开绝不会停在"黑框挡屏且关不掉"的状态 */
+    modal.hidden = true;
+    document.documentElement.style.overflow = '';
   }
 
   /* ============================================================
@@ -1661,20 +1678,47 @@
     }
   }
 
+  /* 每个模块独立容错：任何一处出错都不再拖垮整页。
+     之前是"一个 init 抛错，后面的板块全部空白"（线上就出现过这种现象），
+     现在改为逐个 try/catch，并在控制台与页面报错条里指出是哪一步失败。 */
+  function safeInit(name, fn) {
+    try {
+      fn();
+      return true;
+    } catch (err) {
+      if (window.console && console.error) {
+        console.error('[初始化失败] ' + name + '：', err);
+      }
+      if (typeof reportError === 'function') {
+        reportError(name + ' 初始化失败：' + (err && err.message ? err.message : err));
+      }
+      return false;
+    }
+  }
+
   function init() {
-    initErrorReporter();
-    initTheme();
-    initNav();
-    initHeroCanvas();
-    initHeroTitle();
-    initTerminal();
-    initRouteMap();
-    initTimeline();
-    initMediaPlayer();
-    initSpirit();
-    initCounters();
-    initQuiz();
-    initReveal();
+    /* 报错条最先装好，后面的任何异常都能被发现 */
+    safeInit('运行时报错提示条', initErrorReporter);
+    safeInit('主题', initTheme);
+    safeInit('顶栏导航', initNav);
+    safeInit('首屏粒子背景', initHeroCanvas);
+    safeInit('首屏标题渐变', initHeroTitle);
+    safeInit('史料检索面板', initTerminal);
+    safeInit('长征路线图', initRouteMap);
+    safeInit('长征大事记与讲解视频', initTimeline);
+    safeInit('视频播放浮层', initMediaPlayer);
+    safeInit('长征精神卡片', initSpirit);
+    safeInit('数据长征数字', initCounters);
+    safeInit('知识自测', initQuiz);
+    safeInit('滚动出现动画', initReveal);
+
+    /* 兜底：确保视频浮层在页面加载时一定是关闭的，
+       避免任何异常或环境干扰导致它一开始就挡住页面 */
+    var modal = $('#mediaModal');
+    if (modal) modal.hidden = true;
+    /* 同时兜底：把可能残留的半透明内容强制显示 */
+    if (typeof forceRevealAll === 'function') safeInit('兜底显示', forceRevealAll);
+
     document.documentElement.classList.add('js-ready');
   }
 
