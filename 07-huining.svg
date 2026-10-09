@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360" role="img" aria-label="1935年10月至1936年10月，中央红军到达陕北吴起镇，红军三大主力在甘肃会宁会师">
+  <title>到达陕北 · 三军会师</title>
+  <defs>
+    <linearGradient id="hsky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f6c98a"/><stop offset="0.45" stop-color="#e8915c"/><stop offset="1" stop-color="#b8503a"/>
+    </linearGradient>
+    <linearGradient id="hloess" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c9a066"/><stop offset="1" stop-color="#7d5b34"/>
+    </linearGradient>
+    <radialGradient id="sun"><stop offset="0" stop-color="#fff3cf"/><stop offset="0.5" stop-color="#ffdf9a" stop-opacity="0.8"/><stop offset="1" stop-color="#ffcf7a" stop-opacity="0"/></radialGradient>
+    <radialGradient id="ray"><stop offset="0" stop-color="#ffe6a8" stop-opacity="0.5"/><stop offset="1" stop-color="#ffe6a8" stop-opacity="0"/></radialGradient>
+    <style>
+      @keyframes flagW{0%,100%{transform:skewY(0deg) scaleY(1)}50%{transform:skewY(-3.5deg) scaleY(1.03)}}
+      @keyframes rise{0%{transform:translateY(0);opacity:0}30%{opacity:.8}100%{transform:translateY(-120px);opacity:0}}
+      @keyframes cheer{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+      .fw{animation:flagW 3.6s ease-in-out infinite;transform-origin:left bottom}
+      .fw2{animation:flagW 4.4s ease-in-out infinite .6s;transform-origin:left bottom}
+      .fw3{animation:flagW 4s ease-in-out infinite 1.2s;transform-origin:left bottom}
+      .dust{animation:rise 7s linear infinite}
+      .d2{animation-delay:2.4s}.d3{animation-delay:4.2s}
+      .cheer{animation:cheer 1.9s ease-in-out infinite;transform-box:fill-box;transform-origin:center bottom}
+      .cheer2{animation-delay:.55s}.cheer3{animation-delay:1.1s}
+      @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+    </style>
+  </defs>
+
+  <rect width="640" height="360" fill="url(#hsky)"/>
+  <!-- 朝阳 -->
+  <circle cx="512" cy="112" r="120" fill="url(#ray)"/>
+  <circle cx="512" cy="112" r="40" fill="url(#sun)"/>
+  <circle cx="512" cy="112" r="23" fill="#fff6dc" opacity="0.95"/>
+  <!-- 光芒 -->
+  <g stroke="#ffe9b8" stroke-width="2" opacity="0.3">
+    <path d="M512 46 L512 66 M512 158 L512 178 M446 112 L466 112 M558 112 L578 112"/>
+    <path d="M466 66 L480 80 M544 144 L558 158 M558 66 L544 80 M466 158 L480 144"/>
+  </g>
+
+  <!-- 远山（陕北塬峁） -->
+  <path d="M0 206 Q60 178 128 202 T262 198 T400 206 T540 194 T640 204 L640 244 L0 244 Z" fill="#a9793f" opacity="0.75"/>
+
+  <!-- 宝塔山与宝塔 -->
+  <g>
+    <path d="M296 244 L392 132 L488 244 Z" fill="#8a6136"/>
+    <path d="M296 244 L392 132 L488 244 Z" fill="none" stroke="#6d4a26" stroke-width="1.5" opacity="0.6"/>
+    <!-- 宝塔：九层 -->
+    <g transform="translate(392,132)">
+      <g fill="#e4d3b4" stroke="#8a6b45" stroke-width="1">
+        <rect x="-9" y="0" width="18" height="10"/><rect x="-12" y="10" width="24" height="4"/>
+        <rect x="-8" y="14" width="16" height="10"/><rect x="-11" y="24" width="22" height="4"/>
+        <rect x="-7.5" y="28" width="15" height="10"/><rect x="-10.5" y="38" width="21" height="4"/>
+        <rect x="-7" y="42" width="14" height="10"/><rect x="-10" y="52" width="20" height="4"/>
+        <rect x="-6.5" y="56" width="13" height="11"/><rect x="-9.5" y="67" width="19" height="4"/>
+        <rect x="-6" y="71" width="12" height="12"/><rect x="-9" y="83" width="18" height="4"/>
+        <rect x="-5.5" y="87" width="11" height="13"/><rect x="-9" y="100" width="18" height="5"/>
+      </g>
+      <path d="M0 -4 L0 -16" stroke="#8a6b45" stroke-width="2"/>
+      <path d="M-7 -16 L0 -26 L7 -16 Z" fill="#c8342b"/>
+    </g>
+  </g>
+
+  <!-- 黄土地面 -->
+  <path d="M0 244 L640 232 L640 360 L0 360 Z" fill="url(#hloess)"/>
+  <g stroke="#a37c48" stroke-width="1.6" fill="none" opacity="0.5">
+    <path d="M0 292 Q160 280 340 294 T640 288"/>
+    <path d="M0 330 Q180 318 380 332 T640 324"/>
+  </g>
+
+  <!-- 会师的三面军旗 -->
+  <g>
+    <g class="fw">
+      <rect x="176" y="176" width="3" height="96" fill="#4a3220"/>
+      <path d="M179 180 l58 11 -58 11 z" fill="#c8342b"/>
+      <path d="M187 186 l9 4 -9 4 z" fill="#f2dfa8" opacity="0.95"/>
+      <path d="M187 194 l9 4 -9 4 z" fill="#f2dfa8" opacity="0.85"/>
+    </g>
+    <g class="fw2">
+      <rect x="252" y="164" width="3" height="108" fill="#4a3220"/>
+      <path d="M255 168 l64 12 -64 12 z" fill="#c8342b"/>
+      <path d="M264 175 l10 4 -10 4 z" fill="#f2dfa8" opacity="0.95"/>
+    </g>
+    <g class="fw3">
+      <rect x="330" y="178" width="3" height="94" fill="#4a3220"/>
+      <path d="M333 182 l56 11 -56 11 z" fill="#c8342b"/>
+      <path d="M341 188 l9 4 -9 4 z" fill="#f2dfa8" opacity="0.9"/>
+    </g>
+  </g>
+
+  <!-- 欢呼会师的队伍 -->
+  <g fill="#2a1c12">
+    <g class="cheer">
+      <circle cx="200" cy="244" r="8"/><rect x="190" y="252" width="20" height="40" rx="6"/>
+      <path d="M190 258 L172 232" stroke="#2a1c12" stroke-width="4" stroke-linecap="round"/>
+      <path d="M210 258 L228 234" stroke="#2a1c12" stroke-width="4" stroke-linecap="round"/>
+      <rect x="193" y="291" width="6" height="26"/><rect x="203" y="291" width="6" height="26"/>
+    </g>
+    <g class="cheer cheer2">
+      <circle cx="256" cy="252" r="7.5"/><rect x="247" y="259" width="18" height="36" rx="6"/>
+      <path d="M247 265 L232 242" stroke="#2a1c12" stroke-width="4" stroke-linecap="round"/>
+      <path d="M265 265 L280 244" stroke="#2a1c12" stroke-width="4" stroke-linecap="round"/>
+      <rect x="250" y="294" width="5.5" height="24"/><rect x="259" y="294" width="5.5" height="24"/>
+    </g>
+    <g class="cheer cheer3">
+      <circle cx="310" cy="248" r="7"/><rect x="302" y="255" width="17" height="34" rx="5"/>
+      <path d="M302 261 L288 240" stroke="#2a1c12" stroke-width="4" stroke-linecap="round"/>
+      <rect x="305" y="288" width="5" height="24"/><rect x="313" y="288" width="5" height="24"/>
+    </g>
+    <g opacity="0.9">
+      <circle cx="360" cy="256" r="6.4"/><rect x="353" y="262" width="15" height="31" rx="5"/>
+      <path d="M353 268 L340 250" stroke="#2a1c12" stroke-width="3.6" stroke-linecap="round"/>
+      <rect x="356" y="292" width="4.6" height="22"/><rect x="363" y="292" width="4.6" height="22"/>
+    </g>
+    <g opacity="0.8">
+      <circle cx="404" cy="262" r="5.6"/><rect x="398" y="267" width="13" height="27" rx="4"/>
+      <rect x="400" y="293" width="4" height="20"/><rect x="407" y="293" width="4" height="20"/>
+    </g>
+    <!-- 更多远处的队伍 -->
+    <g opacity="0.6">
+      <circle cx="452" cy="268" r="4.6"/><rect x="447" y="272" width="11" height="22" rx="4"/>
+      <circle cx="484" cy="272" r="4.2"/><rect x="479" y="276" width="10" height="20" rx="3.5"/>
+      <circle cx="514" cy="276" r="3.8"/><rect x="510" y="279" width="9" height="17" rx="3"/>
+    </g>
+  </g>
+  <ellipse cx="300" cy="322" rx="200" ry="12" fill="#6b4c26" opacity="0.4"/>
+
+  <!-- 飞扬的尘土 -->
+  <g fill="#e6cfa6" opacity="0.5">
+    <circle class="dust" cx="236" cy="312" r="2.6"/>
+    <circle class="dust d2" cx="330" cy="318" r="2.2"/>
+    <circle class="dust d3" cx="420" cy="308" r="2.4"/>
+  </g>
+</svg>
