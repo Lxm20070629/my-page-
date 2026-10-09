@@ -7,8 +7,8 @@
      3. 首屏 Canvas 星火粒子背景
      4. 首屏终端打字机效果
      5. 长征路线动画地图（Canvas 逐段绘制 + 节点联动）
-     6. 长征大事记：十段史料 + 讲解视频
-     7. 讲解视频播放浮层
+     6. 长征大事记时间轴
+     7. 四路红军 / 重要战斗 / 青春的长征 / 遗址纪念地
      8. 长征精神翻转卡片 + 语音讲解
      9. 数据长征：数字滚动动画
     10. 长征知识小自测
@@ -1112,117 +1112,46 @@
   }
 
   /* ============================================================
-     6. 长征大事记：十段史料 + 讲解视频
+     6. 长征大事记时间轴
      ------------------------------------------------------------
-     每段事记 = 原创插画（作视频封面）+ 日期 + 标题 + 史实 + 讲解视频。
-     视频来源在页面末尾"资料来源"区逐条列出；cite 字段就是那里的出处。
-     体积较大的视频一律 preload="none"：不点开就不下载，避免一进页面
-     就拖走上百 MB；关闭浮层时销毁 <video>，释放解码器与内存。
+     九段坐标，每段为"日期 + 标题 + 史实叙述"。数据集中在 TIMELINE 数组里，
+     增删条目只改数据即可，不必动渲染逻辑。
      ============================================================ */
   var TIMELINE = [
-    {
-      date: '1934.10', title: '于都河畔，出发',
-      desc: '中央红军8.6万余人从江西瑞金、于都等地出发，开始战略转移。于都百姓拆下门板搭起浮桥，送红军渡河。',
-      poster: 'assets/media/01-yudu.svg',
-      video: { src: 'assets/media/01-yidu.mp4', cite: '来源待补充' }
-    },
-    {
-      date: '1934.11 — 12', title: '血战湘江',
-      desc: '为突破第四道封锁线，红军在湘江两岸与敌血战，付出极其惨重的代价。这一战让全党全军开始深刻反思"左"倾错误的危害。',
-      poster: 'assets/media/02-xiangjiang.svg',
-      video: { src: 'assets/media/02-xiangjiang.mp4', cite: '来源待补充' }
-    },
-    {
-      date: '1935.01', title: '遵义会议，伟大转折',
-      desc: '会议确立了毛泽东在党中央和红军的领导地位，在最危急关头挽救了党、挽救了红军、挽救了中国革命，是党的历史上一个生死攸关的转折点。',
-      poster: 'assets/media/03-zunyi.svg',
-      video: { src: 'assets/media/03-zunyi.mp4', cite: '来源待补充' }
-    },
-    {
-      date: '1935.01 — 05', title: '四渡赤水，神来之笔',
-      desc: '在川黔滇边界，红军四次渡过赤水河，忽东忽西、声东击西，牢牢掌握战场主动权，被称为长征中最精彩的一仗。',
-      poster: 'assets/media/04-chishui.svg',
-      video: { src: 'assets/media/04-chishui.mp4', cite: '来源待补充' }
-    },
-    {
-      date: '1935.05', title: '巧渡金沙江',
-      desc: '红军在皎平渡仅靠几只木船，用七天七夜渡过金沙江，把追兵远远甩在江南岸。',
-      poster: 'assets/media/05-jinsha.svg',
-      video: { src: 'assets/media/05-jinsha.mp4', cite: '来源待补充' }
-    },
-    {
-      date: '1935.05', title: '强渡大渡河 · 飞夺泸定桥',
-      desc: '十七名勇士驾小船冒着弹雨强渡大渡河；随后二十二名突击队员攀着十三根铁索夺下泸定桥，为全军打开北上通道。',
-      poster: 'assets/media/05-jinsha.svg',
-      video: { src: 'assets/media/05b-dadu-luding.mp4', cite: '来源待补充' }
-    },
-    {
-      date: '1935.06', title: '翻雪山',
-      desc: '红军翻越夹金山等终年积雪的高山，空气稀薄、严寒刺骨，战士们互相搀扶，翻过一座又一座雪山。',
-      poster: 'assets/media/06-xueshan.svg',
-      video: { src: 'assets/media/06-xueshan.mp4', cite: '来源待补充' }
-    },
-    {
-      date: '1935.08', title: '过草地',
-      desc: '穿越茫茫松潘草地，泥沼遍布、粮尽水毒。饥饿、寒冷与沼泽夺走了许多战士的生命，队伍依旧向北。',
-      poster: 'assets/media/06-xueshan.svg',
-      video: { src: 'assets/media/06b-caodi.mp4', cite: '来源待补充' }
-    },
-    {
-      date: '1935.10 — 1936.10', title: '到达陕北 · 三军会师',
-      desc: '1935年10月，中央红军到达陕北吴起镇；1936年10月，红军三大主力在甘肃会宁、静宁将台堡会师，宣告长征胜利结束。',
-      poster: 'assets/media/07-huining.svg',
-      video: { src: 'assets/media/07-huining.mp4', cite: '来源待补充' }
-    }
+    { date: '1934.10', title: '于都河畔，出发',
+      desc: '中央红军8.6万余人从江西瑞金、于都等地出发，开始战略转移。于都百姓拆下门板搭起浮桥，送红军渡河。' },
+    { date: '1934.11 — 12', title: '血战湘江',
+      desc: '为突破第四道封锁线，红军在湘江两岸与敌血战，付出极其惨重的代价。这一战让全党全军开始深刻反思"左"倾错误的危害。' },
+    { date: '1935.01', title: '遵义会议，伟大转折',
+      desc: '会议确立了毛泽东在党中央和红军的领导地位，在最危急关头挽救了党、挽救了红军、挽救了中国革命，是党的历史上一个生死攸关的转折点。' },
+    { date: '1935.01 — 05', title: '四渡赤水，神来之笔',
+      desc: '在川黔滇边界，红军四次渡过赤水河，忽东忽西、声东击西，牢牢掌握战场主动权，被称为长征中最精彩的一仗。' },
+    { date: '1935.05', title: '巧渡金沙江',
+      desc: '红军在皎平渡仅靠几只木船，用七天七夜渡过金沙江，把追兵远远甩在江南岸。' },
+    { date: '1935.05', title: '强渡大渡河 · 飞夺泸定桥',
+      desc: '十七名勇士驾小船冒着弹雨强渡大渡河；随后二十二名突击队员攀着十三根铁索夺下泸定桥，为全军打开北上通道。' },
+    { date: '1935.06', title: '翻雪山',
+      desc: '红军翻越夹金山等终年积雪的高山，空气稀薄、严寒刺骨，战士们互相搀扶，翻过一座又一座雪山。' },
+    { date: '1935.08', title: '过草地',
+      desc: '穿越茫茫松潘草地，泥沼遍布、粮尽水毒。饥饿、寒冷与沼泽夺走了许多战士的生命，队伍依旧向北。' },
+    { date: '1935.10 — 1936.10', title: '到达陕北 · 三军会师',
+      desc: '1935年10月，中央红军到达陕北吴起镇；1936年10月，红军三大主力在甘肃会宁、静宁将台堡会师，宣告长征胜利结束。' }
   ];
-
-  var PLAY_ICON = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>';
-
-  function escapeAttr(s) {
-    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  }
 
   function initTimeline() {
     var list = $('#timelineList');
     if (!list) return;
 
-    list.innerHTML = TIMELINE.map(function (e, i) {
-      var media = '';
-      if (e.poster) {
-        var play = e.video && e.video.src
-          ? '<button class="tl-play" type="button" data-tl="' + i + '" ' +
-            'aria-label="播放讲解视频：' + escapeAttr(e.title) + '">' +
-            '<span class="tl-play-ico">' + PLAY_ICON + '</span>观看讲解视频</button>'
-          : '<span class="tl-novideo">暂无视频</span>';
-        media =
-          '<figure class="tl-media">' +
-            '<img src="' + escapeAttr(e.poster) + '" alt="' + escapeAttr(e.title + '：原创矢量插画') +
-              '" loading="lazy" decoding="async" width="640" height="360">' +
-            '<figcaption>' + play + '</figcaption>' +
-          '</figure>';
-      }
+    list.innerHTML = TIMELINE.map(function (e) {
       return '<li class="reveal">' +
         '<div class="tl-node" aria-hidden="true"></div>' +
-        '<article class="tl-card">' + media +
-          '<div class="tl-body">' +
-            '<span class="tl-date">' + e.date + '</span>' +
-            '<h3>' + e.title + '</h3>' +
-            '<p>' + e.desc + '</p>' +
-          '</div>' +
-        '</article>' +
+        '<div class="tl-card">' +
+          '<span class="tl-date">' + e.date + '</span>' +
+          '<h3>' + e.title + '</h3>' +
+          '<p>' + e.desc + '</p>' +
+        '</div>' +
       '</li>';
     }).join('');
-
-    /* 渲染视频来源清单（页面末尾"资料来源"区） */
-    var srcList = $('#videoSources');
-    if (srcList) {
-      srcList.innerHTML = TIMELINE.map(function (e, i) {
-        var cite = (e.video && e.video.cite) ? e.video.cite : '来源待补充';
-        return '<li><span class="src-name">' + String(i).padStart(2, '0') + ' ' + e.title + '</span>' +
-          '<span class="src-meta">' + cite + '</span></li>';
-      }).join('');
-    }
 
     /* 逐条点亮 */
     var items = $$('#timelineList > li');
@@ -1244,94 +1173,135 @@
   }
 
   /* ============================================================
-     7. 讲解视频播放浮层
+     7. 四路红军 / 重要战斗 / 青春的长征 / 遗址纪念地
      ------------------------------------------------------------
-     · 只在点击时创建 <video> 并设置 src：不点开就一个字节都不下载，
-       十个视频合计上百 MB，预载会让页面直接卡死；
-     · 关闭时移除 src 并销毁元素，释放解码器与内存；
-     · 底部显示该段的来源标注，与页面末尾的"资料来源"区对应。
+     四个板块都是数据驱动：内容集中在下面四张表里，改内容只改数据。
+     史实依据中央党史和文献研究院、人民网理论频道关于长征的权威表述。
      ============================================================ */
-  function initMediaPlayer() {
-    var modal = $('#mediaModal');
-    if (!modal) return;
-    var body = $('#mediaBody');
-    var titleEl = $('#mediaTitle');
-    var srcEl = $('#mediaSource');
-    var lastFocus = null;
 
-    function close() {
-      var v = body.querySelector ? body.querySelector('video') : null;
-      if (v) {
-        try { v.pause(); } catch (err) {}
-        try { v.removeAttribute('src'); v.load && v.load(); } catch (err) {}
-      }
-      body.innerHTML = '';
-      modal.hidden = true;
-      document.documentElement.style.overflow = '';
-      if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (err) {} }
-    }
+  /* 四路红军长征基本情况 */
+  var FORCES = [
+    { name: '中央红军（红一方面军）', start: '1934 年 10 月', from: '江西于都、瑞金等地',
+      out: '8.6 万余人', arrive: '约 7000 人' },
+    { name: '红二十五军', start: '1934 年 11 月', from: '河南罗山何家冲',
+      out: '约 2980 人', arrive: '3400 余人' },
+    { name: '红四方面军', start: '1935 年 5 月', from: '四川、陕西边界地区',
+      out: '8 万余人', arrive: '1.3 万余人' },
+    { name: '红二方面军', start: '1935 年 11 月', from: '湖南桑植',
+      out: '1.7 万余人', arrive: '1.1 万余人' }
+  ];
 
-    function open(i, btn) {
-      var item = TIMELINE[i];
-      if (!item || !item.video || !item.video.src) return;
-      lastFocus = btn || null;
-      if (titleEl) titleEl.textContent = item.title;
-      if (srcEl) srcEl.textContent = item.video.cite || '来源待补充';
+  /* 长征中的重要战役战斗 */
+  var BATTLES = [
+    { date: '1934.11 — 12', name: '湘江战役', place: '广西全州、兴安一带',
+      gone: '中央红军由 8.6 万余人减至 3 万余人',
+      text: '为突破第四道封锁线，红军在湘江两岸与敌血战。这是长征以来最惨烈的一仗，惨重代价使全党全军开始深刻反思"左"倾错误的危害。' },
+    { date: '1935.01 — 05', name: '四渡赤水', place: '川黔滇边界',
+      gone: '四次渡过赤水河，摆脱数十万敌军围堵',
+      text: '红军忽东忽西、声东击西，在运动中调动敌人，牢牢掌握战场主动权，被称为毛泽东军事指挥的得意之笔。' },
+    { date: '1935.05', name: '强渡大渡河', place: '四川石棉安顺场',
+      gone: '十七名勇士驾小船强渡成功',
+      text: '面对湍急的大渡河与对岸封锁，十七名勇士冒着弹雨驾小船强渡，抢占北岸渡口，为后续部队打开通道。' },
+    { date: '1935.05.29', name: '飞夺泸定桥', place: '四川泸定',
+      gone: '二十二名突击队员攀铁索夺桥',
+      text: '二十二名突击队员冒着弹雨，攀着十三根铁索匍匐前进，夺下泸定桥，粉碎了敌人妄图把红军变成"第二个石达开"的计划。' },
+    { date: '1935.09', name: '突破腊子口', place: '甘肃迭部',
+      gone: '突破天险，打开北上通道',
+      text: '腊子口两侧绝壁夹峙，是甘南天险。红军攀绝壁、绕侧后，一举突破这一天险，为北上打开了最后一道关口。' }
+  ];
 
-      /* 先把弹层显示出来，再填内容：即使后续某一步出错，
-         用户也能用关闭按钮退出，不会卡在打不开又关不掉的死局里 */
-      modal.hidden = false;
-      document.documentElement.style.overflow = 'hidden';
+  /* 青春的长征 */
+  var YOUTH = [
+    { num: '17 — 18', unit: '岁', label: '红二十五军指战员的平均年龄',
+      note: '出发时全军约 2980 人，队伍中还有一批十二三岁的少年儿童。' },
+    { num: '28', unit: '岁', label: '吴焕先牺牲时的年龄',
+      note: '红二十五军政治委员。1935 年 8 月在甘肃泾川战斗中负重伤牺牲。' },
+    { num: '41', unit: '岁', label: '1935 年遵义会议时毛泽东的年龄',
+      note: '1893 年生。长征出发时他 41 岁，遵义会议时仍是 41 岁。' },
+    { num: '36 / 48', unit: '岁', label: '周恩来与朱德长征出发时的年龄',
+      note: '周恩来 1898 年生，朱德 1886 年生，1934 年 10 月出发时分别为 36 岁与 48 岁。' }
+  ];
 
-      body.innerHTML =
-        '<div class="mm-stage">' +
-          '<video class="mm-video" src="' + escapeAttr(item.video.src) + '" controls autoplay ' +
-            'playsinline preload="metadata"></video>' +
-          '<div class="mm-loading">视频加载中…</div>' +
-        '</div>';
+  /* 沿线的遗址与纪念地 */
+  var SITES = [
+    { name: '江西于都 · 中央红军长征出发地纪念园', tag: '出发地',
+      text: '1934 年 10 月中央红军在此集结渡河出发，园内有长征出发地纪念馆与渡口旧址。' },
+    { name: '江西瑞金 · 叶坪与沙洲坝革命旧址群', tag: '出发地',
+      text: '中央苏区时期的党政军机关所在地，也是长征出发前的最后驻地之一。' },
+    { name: '湖南道县 · 陈树湘烈士纪念园', tag: '湘江战役',
+      text: '红三十四师师长陈树湘在湘江战役中率部断后，伤重被俘后断肠明志，年仅 29 岁。' },
+    { name: '广西全州 · 红军长征湘江战役纪念园', tag: '湘江战役',
+      text: '建在湘江战役主战场遗址上，纪念此役牺牲的数万红军将士。' },
+    { name: '贵州遵义 · 遵义会议会址', tag: '伟大转折',
+      text: '1935 年 1 月遵义会议在此召开，确立了毛泽东在党中央和红军的领导地位。' },
+    { name: '贵州习水 · 四渡赤水纪念馆', tag: '四渡赤水',
+      text: '系统展示四渡赤水的战役过程，馆址位于土城镇。' },
+    { name: '四川石棉 · 安顺场红军强渡大渡河纪念地', tag: '强渡大渡河',
+      text: '留有强渡大渡河的渡口遗址与纪念碑，是十七名勇士登船出发的地方。' },
+    { name: '四川泸定 · 泸定桥革命文物陈列馆', tag: '飞夺泸定桥',
+      text: '泸定桥为全国重点文物保护单位，桥头建有红军飞夺泸定桥纪念碑。' },
+    { name: '四川松潘 · 红军长征纪念碑碑园', tag: '雪山草地',
+      text: '位于川主寺，是纪念红军翻雪山、过草地的标志性纪念地。' },
+    { name: '甘肃迭部 · 腊子口战役遗址', tag: '突破天险',
+      text: '保留有腊子口战役纪念碑与碉堡残迹，两侧绝壁至今仍显险峻。' },
+    { name: '甘肃会宁 · 红军会宁会师旧址', tag: '三军会师',
+      text: '1936 年 10 月红军三大主力在此会师，标志长征胜利结束，建有会师纪念塔。' },
+    { name: '陕西吴起 · 中央红军长征胜利纪念园', tag: '落脚陕北',
+      text: '1935 年 10 月中央红军到达吴起镇，这里成为长征的落脚点。' }
+  ];
 
-      var v = body.querySelector('video');
-      var load = body.querySelector('.mm-loading');
-      if (v) {
-        v.addEventListener('loadeddata', function () { if (load) load.hidden = true; });
-        v.addEventListener('playing', function () { if (load) load.hidden = true; });
-        v.addEventListener('error', function () {
-          if (load) load.innerHTML = '视频无法播放。<br>请确认文件已放入 源码/assets/media/ 目录，或用本地预览服务器打开。';
-        });
-        /* 保险：8 秒后仍未播起来，直接给出提示，不让用户对着黑屏干等 */
-        window.setTimeout(function () {
-          if (load && !load.hidden && v.readyState < 2) {
-            load.innerHTML = '视频仍在加载或无法播放。<br>若持续如此，请用本地预览服务器打开页面。';
-          }
-        }, 8000);
-      }
-      var cb = $('.mm-close', modal);
-      if (cb && cb.focus) { try { cb.focus(); } catch (err) {} }
-    }
+  function initForces() {
+    var body = $('#forcesBody');
+    if (!body) return;
+    body.innerHTML = FORCES.map(function (f) {
+      return '<tr>' +
+        '<th scope="row">' + f.name + '</th>' +
+        '<td>' + f.start + '</td>' +
+        '<td>' + f.from + '</td>' +
+        '<td>' + f.out + '</td>' +
+        '<td>' + f.arrive + '</td>' +
+      '</tr>';
+    }).join('');
+  }
 
-    /* 用捕获阶段监听：即使弹层内部有元素吞掉了冒泡，关闭依然有效 */
-    document.addEventListener('click', function (ev) {
-      var t = ev.target;
-      var play = t && t.closest ? t.closest('.tl-play') : null;
-      if (play) { open(Number(play.dataset.tl), play); return; }
-      if (t && t.closest && t.closest('[data-close]')) close();
-    }, true);
+  function initBattles() {
+    var grid = $('#battleGrid');
+    if (!grid) return;
+    grid.innerHTML = BATTLES.map(function (b) {
+      return '<article class="battle-card reveal">' +
+        '<span class="battle-date">' + b.date + '</span>' +
+        '<h3>' + b.name + '</h3>' +
+        '<p class="battle-place">' + b.place + '</p>' +
+        '<p class="battle-gone">' + b.gone + '</p>' +
+        '<p>' + b.text + '</p>' +
+      '</article>';
+    }).join('');
+  }
 
-    document.addEventListener('keydown', function (ev) {
-      if (ev.key === 'Escape' && !modal.hidden) close();
-    });
+  function initYouth() {
+    var grid = $('#youthGrid');
+    if (!grid) return;
+    grid.innerHTML = YOUTH.map(function (y) {
+      return '<div class="youth-card">' +
+        '<div class="youth-num"><b>' + y.num + '</b><span>' + y.unit + '</span></div>' +
+        '<p class="youth-label">' + y.label + '</p>' +
+        '<p class="youth-note">' + y.note + '</p>' +
+      '</div>';
+    }).join('');
+  }
 
-    /* 双保险：直接挂在关闭按钮与遮罩上，不依赖事件委托 */
-    $$('[data-close]', modal).forEach(function (el) {
-      el.addEventListener('click', function (ev) {
-        if (ev && ev.stopPropagation) ev.stopPropagation();
-        close();
-      });
-    });
-
-    /* 初始化结束时强制关闭一次：确保页面一打开绝不会停在"黑框挡屏且关不掉"的状态 */
-    modal.hidden = true;
-    document.documentElement.style.overflow = '';
+  function initSites() {
+    var list = $('#siteList');
+    if (!list) return;
+    list.innerHTML = SITES.map(function (s) {
+      return '<li>' +
+        '<span class="site-tag">' + s.tag + '</span>' +
+        '<div class="site-body">' +
+          '<h3>' + s.name + '</h3>' +
+          '<p>' + s.text + '</p>' +
+        '</div>' +
+      '</li>';
+    }).join('');
   }
 
   /* ============================================================
@@ -1705,17 +1675,16 @@
     safeInit('首屏标题渐变', initHeroTitle);
     safeInit('史料检索面板', initTerminal);
     safeInit('长征路线图', initRouteMap);
-    safeInit('长征大事记与讲解视频', initTimeline);
-    safeInit('视频播放浮层', initMediaPlayer);
+    safeInit('长征大事记', initTimeline);
+    safeInit('四路红军', initForces);
+    safeInit('重要战斗', initBattles);
+    safeInit('青春的长征', initYouth);
+    safeInit('遗址与纪念地', initSites);
     safeInit('长征精神卡片', initSpirit);
     safeInit('数据长征数字', initCounters);
     safeInit('知识自测', initQuiz);
     safeInit('滚动出现动画', initReveal);
 
-    /* 兜底：确保视频浮层在页面加载时一定是关闭的，
-       避免任何异常或环境干扰导致它一开始就挡住页面 */
-    var modal = $('#mediaModal');
-    if (modal) modal.hidden = true;
     /* 同时兜底：把可能残留的半透明内容强制显示 */
     if (typeof forceRevealAll === 'function') safeInit('兜底显示', forceRevealAll);
 

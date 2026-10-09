@@ -411,32 +411,11 @@ html.is-paused .i-pause{display:none}
 .timeline > li:nth-child(even) .tl-node{right:auto;left:-8px}
 .tl-card{
   border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);
-  overflow:hidden;box-shadow:var(--shadow);
+  padding:22px 24px;box-shadow:var(--shadow);
   transition:transform .25s cubic-bezier(.2,.8,.3,1),box-shadow .25s,border-color .25s;
 }
 .tl-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:color-mix(in srgb,var(--red-600) 30%,var(--border))}
 
-/* 事记配图：既是原创插画，也是讲解视频的封面，16:9 卡片顶部满宽 */
-.tl-media{margin:0;position:relative;aspect-ratio:16/9;background:var(--bg-2);overflow:hidden}
-.tl-media img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
-.tl-media figcaption{
-  position:absolute;left:0;right:0;bottom:0;
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
-  padding:18px 14px 10px;
-  background:linear-gradient(to top,rgba(20,8,8,.62),rgba(20,8,8,.12) 60%,transparent);
-}
-.tl-play{
-  display:inline-flex;align-items:center;gap:7px;
-  padding:7px 15px;border-radius:999px;cursor:pointer;
-  font-size:12.5px;font-weight:600;font-family:inherit;
-  color:#fff2e6;background:rgba(20,8,8,.5);border:1px solid rgba(255,242,230,.36);
-  transition:background .2s,border-color .2s,transform .2s;
-}
-.tl-play:hover{background:var(--red-600);border-color:transparent;transform:translateY(-1.5px)}
-.tl-play-ico{display:grid;place-items:center;width:14px;height:14px;flex:none}
-.tl-play-ico svg{width:14px;height:14px}
-.tl-novideo{font-size:11.5px;color:rgba(255,242,230,.62)}
-.tl-body{padding:20px 24px 22px}
 .tl-date{
   display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:.1em;
   color:var(--accent);background:var(--accent-soft);padding:3px 11px;border-radius:999px;margin-bottom:11px;
@@ -540,7 +519,93 @@ html[data-theme="dark"] .spirit-back{background:linear-gradient(150deg,#5c1010,#
 .bar-val{text-align:right;font-weight:600;color:var(--text)}
 .chart-note{margin-top:22px;font-size:12.5px;color:var(--text-3);line-height:1.8}
 
-/* ---------- 11. 答题 ---------- */
+/* ---------- 11. 四路红军 ---------- */
+.forces-wrap{
+  border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);
+  padding:8px 8px 0;box-shadow:var(--shadow);overflow-x:auto;
+}
+.forces-table{width:100%;border-collapse:collapse;font-size:14px;min-width:660px}
+.forces-table caption{
+  position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;
+}
+.forces-table thead th{
+  text-align:left;font-size:12.5px;font-weight:700;letter-spacing:.08em;color:var(--text-3);
+  padding:14px 16px;border-bottom:1px solid var(--border);white-space:nowrap;
+}
+.forces-table tbody th{
+  text-align:left;font-weight:600;color:var(--text);padding:16px;white-space:nowrap;
+}
+.forces-table tbody td{padding:16px;color:var(--text-2);line-height:1.6}
+.forces-table tbody tr + tr th,
+.forces-table tbody tr + tr td{border-top:1px dashed var(--border)}
+.forces-table tbody tr:hover{background:var(--accent-soft)}
+.forces-table tbody td:nth-child(4),
+.forces-table tbody td:nth-child(5){font-variant-numeric:tabular-nums;white-space:nowrap}
+.forces-table thead th:nth-child(4),
+.forces-table thead th:nth-child(5){color:var(--accent)}
+.note{margin-top:20px;font-size:12.5px;color:var(--text-3);line-height:1.8}
+
+/* ---------- 12. 重要战斗 ---------- */
+.battle-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.battle-card{
+  border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);
+  padding:26px;box-shadow:var(--shadow);
+  transition:transform .25s cubic-bezier(.2,.8,.3,1),box-shadow .25s,border-color .25s;
+}
+.battle-card:hover{
+  transform:translateY(-4px);box-shadow:var(--shadow-lg);
+  border-color:color-mix(in srgb,var(--red-600) 30%,var(--border));
+}
+.battle-date{
+  display:inline-block;font-size:12px;font-weight:700;letter-spacing:.1em;
+  color:var(--accent);background:var(--accent-soft);padding:3px 11px;border-radius:999px;
+}
+.battle-card h3{font-size:18.5px;margin:13px 0 7px}
+.battle-place{font-size:13px;color:var(--text-3);margin-bottom:13px}
+.battle-gone{
+  font-size:13.5px;font-weight:600;color:var(--red-700);
+  padding:11px 14px;border-radius:11px;background:var(--accent-soft);margin-bottom:14px;
+}
+.battle-card > p:last-child{font-size:14.5px;color:var(--text-2);line-height:1.85}
+
+/* ---------- 13. 青春的长征 ---------- */
+.youth-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px}
+.youth-card{
+  border:1px solid var(--border);border-radius:var(--radius);
+  background:var(--surface);padding:28px 24px;box-shadow:var(--shadow);
+}
+.youth-num{display:flex;align-items:baseline;gap:7px;margin-bottom:15px}
+.youth-num b{
+  font-size:38px;line-height:1;font-weight:800;letter-spacing:-.02em;
+  color:var(--red-700);font-variant-numeric:tabular-nums;
+}
+.youth-num span{font-size:15px;font-weight:600;color:var(--text-3)}
+.youth-label{font-size:14.5px;font-weight:600;color:var(--text);line-height:1.6}
+.youth-note{margin-top:11px;font-size:12.5px;color:var(--text-3);line-height:1.8}
+
+/* ---------- 14. 遗址与纪念地 ---------- */
+.site-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+.site-list > li{
+  display:grid;grid-template-columns:auto 1fr;gap:15px;align-items:start;
+  border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);
+  padding:20px 22px;box-shadow:var(--shadow);
+}
+.site-tag{
+  flex:none;font-size:11.5px;font-weight:700;letter-spacing:.06em;
+  color:var(--accent);background:var(--accent-soft);
+  padding:4px 10px;border-radius:999px;white-space:nowrap;
+}
+.site-body h3{font-size:15.5px;line-height:1.5;margin-bottom:8px}
+.site-body p{font-size:13.5px;color:var(--text-2);line-height:1.8}
+.quote{
+  margin-top:26px;padding:24px 28px;border-left:3px solid var(--red-600);
+  background:var(--surface);border-radius:0 var(--radius) var(--radius) 0;
+  box-shadow:var(--shadow);
+}
+.quote p{font-size:16.5px;font-weight:600;color:var(--text);line-height:1.8}
+.quote cite{display:block;margin-top:9px;font-size:13px;color:var(--text-3);font-style:normal}
+
+/* ---------- 15. 答题 ---------- */
 .quiz-card{
   border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);
   padding:32px;box-shadow:var(--shadow);
@@ -575,56 +640,7 @@ html[data-theme="dark"] .spirit-back{background:linear-gradient(150deg,#5c1010,#
 .quiz-result b{color:var(--gold-400);font-size:22px;font-family:var(--font-title)}
 .quiz-result p{margin-top:6px;font-size:14.5px;color:rgba(255,240,228,.85)}
 
-/* ---------- 12. 视频资料来源 ---------- */
-.src-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:start}
-.src-card{
-  border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);
-  padding:26px;box-shadow:var(--shadow);height:100%;
-}
-.src-card h3{
-  font-size:16.5px;margin-bottom:14px;padding-bottom:11px;border-bottom:1px dashed var(--border);
-}
-.src-list{display:grid;gap:13px}
-.src-list > li{display:grid;gap:3px}
-.src-name{font-size:14px;font-weight:600;color:var(--text);line-height:1.5}
-.src-meta{font-size:12.5px;color:var(--text-3);line-height:1.6}
-.src-note{
-  margin-top:18px;padding-top:14px;border-top:1px dashed var(--border);
-  font-size:12.5px;color:var(--text-3);line-height:1.8;
-}
-.src-list > li.src-note{margin-top:0;padding-top:0;border-top:0}
-
-/* ---------- 13. 视频播放浮层 ---------- */
-.media-modal{position:fixed;inset:0;z-index:95;display:grid;place-items:center;padding:24px}
-.mm-backdrop{position:absolute;inset:0;background:rgba(8,3,3,.82)}
-.mm-panel{
-  position:relative;width:min(920px,100%);max-height:calc(100vh - 48px);
-  display:flex;flex-direction:column;overflow:hidden;
-  border-radius:16px;background:var(--surface);border:1px solid var(--border);
-  box-shadow:0 40px 90px rgba(0,0,0,.55);
-  animation:mpop .26s cubic-bezier(.2,.8,.3,1) both;
-}
-@keyframes mpop{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
-.mm-head{display:flex;align-items:center;gap:14px;padding:13px 16px 13px 22px;border-bottom:1px solid var(--border)}
-.mm-head h3{font-size:16px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mm-close{
-  flex:none;width:36px;height:36px;border-radius:50%;cursor:pointer;
-  display:grid;place-items:center;border:1px solid var(--border);background:var(--surface);
-  color:var(--text-2);transition:background .2s,color .2s,transform .2s;
-}
-.mm-close:hover{background:var(--accent-soft);color:var(--accent);transform:rotate(90deg)}
-.mm-body{background:#0a0707;display:grid;place-items:center;min-height:220px;overflow:auto}
-.mm-stage{position:relative;width:100%}
-.mm-video{display:block;width:100%;max-height:66vh;background:#000}
-.mm-loading{
-  position:absolute;inset:0;display:grid;place-items:center;
-  color:rgba(255,242,230,.82);font-size:13.5px;background:#0a0707;
-}
-.mm-loading[hidden]{display:none}
-.mm-foot{padding:12px 22px;border-top:1px solid var(--border);background:var(--surface-2)}
-.mm-source{font-size:12.5px;color:var(--text-3);line-height:1.6}
-
-/* ---------- 15. 运行时报错提示条（正常时不会出现） ---------- */
+/* ---------- 16. 运行时报错提示条（正常时不会出现） ---------- */
 .err-bar{
   position:fixed;left:0;right:0;top:0;z-index:999;
   display:flex;align-items:center;gap:12px;flex-wrap:wrap;
@@ -640,7 +656,7 @@ html[data-theme="dark"] .spirit-back{background:linear-gradient(150deg,#5c1010,#
   padding:5px 14px;font-size:12.5px;font-family:inherit;
 }
 
-/* ---------- 16. 页脚 ---------- */
+/* ---------- 17. 页脚 ---------- */
 .foot{border-top:1px solid var(--border);background:var(--surface);padding:44px 0}
 .foot-inner{display:flex;flex-wrap:wrap;gap:22px;justify-content:space-between;align-items:center}
 .foot-brand{display:flex;align-items:center;gap:12px}
@@ -655,7 +671,7 @@ html[data-theme="dark"] .spirit-back{background:linear-gradient(150deg,#5c1010,#
 .foot-meta p{font-size:12.5px;color:var(--text-3);line-height:1.8}
 .foot-source{color:var(--text-3);opacity:.85}
 
-/* ---------- 15. 回到顶部 ---------- */
+/* ---------- 18. 回到顶部 ---------- */
 .to-top{
   position:fixed;right:24px;bottom:26px;z-index:55;
   width:44px;height:44px;border-radius:50%;cursor:pointer;
@@ -666,7 +682,7 @@ html[data-theme="dark"] .spirit-back{background:linear-gradient(150deg,#5c1010,#
 }
 .to-top:hover{transform:translateY(-3px) scale(1.04)}
 
-/* ---------- 16. 滚动出现动画 ---------- */
+/* ---------- 19. 滚动出现动画 ---------- */
 /* 用 translate3d 触发合成层，滚动时动画走 GPU 而不触发主线程重排 */
 .reveal{opacity:0;transform:translate3d(0,28px,0);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.3,1)}
 .reveal.is-visible{opacity:1;transform:translate3d(0,0,0)}
@@ -675,7 +691,7 @@ html[data-theme="dark"] .spirit-back{background:linear-gradient(150deg,#5c1010,#
      一旦与滚动出现动画叠加，存在元素始终不可见的风险） */
 .section{contain:layout paint style}
 
-/* ---------- 17. 响应式 ---------- */
+/* ---------- 20. 响应式 ---------- */
 @media (max-width:1080px){
   .nav-links a{padding:8px 10px;font-size:14px}
   .route-grid{grid-template-columns:1fr}
@@ -717,7 +733,7 @@ html[data-theme="dark"] .spirit-back{background:linear-gradient(150deg,#5c1010,#
   .foot-inner{flex-direction:column;align-items:flex-start}
 }
 
-/* ---------- 18. 无障碍与打印 ---------- */
+/* ---------- 21. 无障碍与打印 ---------- */
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   .reveal{opacity:1;transform:none;transition:none}
