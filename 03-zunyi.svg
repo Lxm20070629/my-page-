@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360" role="img" aria-label="1935年1月，遵义会议召开，党的历史上一个生死攸关的转折点">
+  <title>遵义会议</title>
+  <defs>
+    <linearGradient id="zsky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#101a2b"/><stop offset="0.6" stop-color="#1d2b3d"/><stop offset="1" stop-color="#38414a"/>
+    </linearGradient>
+    <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e8dcc6"/><stop offset="1" stop-color="#c9b795"/>
+    </linearGradient>
+    <linearGradient id="roof" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5a4038"/><stop offset="1" stop-color="#3a2721"/>
+    </linearGradient>
+    <radialGradient id="win"><stop offset="0" stop-color="#ffe6a8"/><stop offset="1" stop-color="#ffb347"/></radialGradient>
+    <radialGradient id="zglow"><stop offset="0" stop-color="#ffd88a" stop-opacity="0.5"/><stop offset="1" stop-color="#ffd88a" stop-opacity="0"/></radialGradient>
+    <style>
+      @keyframes candle{0%,100%{opacity:.72}45%{opacity:1}70%{opacity:.85}}
+      @keyframes flagwave{0%,100%{transform:skewY(0deg)}50%{transform:skewY(-3deg)}}
+      .w1{animation:candle 3.2s ease-in-out infinite}
+      .w2{animation:candle 4.1s ease-in-out infinite .8s}
+      .w3{animation:candle 3.7s ease-in-out infinite 1.6s}
+      .w4{animation:candle 4.6s ease-in-out infinite .4s}
+      .flag{animation:flagwave 4.4s ease-in-out infinite;transform-origin:left bottom}
+      @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+    </style>
+  </defs>
+
+  <rect width="640" height="360" fill="url(#zsky)"/>
+  <g fill="#dfe8f5" opacity="0.5">
+    <circle cx="90" cy="48" r="1.6"/><circle cx="196" cy="30" r="1.3"/><circle cx="300" cy="54" r="1.5"/>
+    <circle cx="520" cy="38" r="1.4"/><circle cx="598" cy="66" r="1.2"/>
+  </g>
+  <circle cx="540" cy="80" r="24" fill="#e9f1fb" opacity="0.85"/>
+
+  <!-- 远山 -->
+  <path d="M0 208 L110 168 L210 206 L320 172 L430 210 L540 178 L640 206 L640 250 L0 250 Z" fill="#16202c"/>
+
+  <!-- 会址小楼 -->
+  <g>
+    <!-- 屋顶 -->
+    <path d="M132 176 L318 176 L292 130 L158 130 Z" fill="url(#roof)"/>
+    <path d="M132 176 L318 176 L318 184 L132 184 Z" fill="#2e1f1a"/>
+    <!-- 二层 -->
+    <rect x="152" y="184" width="146" height="52" fill="url(#wall)"/>
+    <!-- 一层 -->
+    <rect x="140" y="236" width="170" height="66" fill="#d8c9ab"/>
+    <rect x="140" y="236" width="170" height="7" fill="#b9a482"/>
+    <!-- 立柱 -->
+    <g fill="#8a6949">
+      <rect x="150" y="240" width="7" height="62"/><rect x="196" y="240" width="7" height="62"/>
+      <rect x="242" y="240" width="7" height="62"/><rect x="288" y="240" width="7" height="62"/>
+    </g>
+    <!-- 二层窗户（暖光） -->
+    <g>
+      <rect class="w1" x="166" y="196" width="22" height="26" fill="url(#win)"/>
+      <rect class="w2" x="214" y="196" width="22" height="26" fill="url(#win)"/>
+      <rect class="w3" x="262" y="196" width="22" height="26" fill="url(#win)"/>
+    </g>
+    <!-- 一层门窗 -->
+    <rect x="162" y="252" width="20" height="50" fill="#3b2a20"/>
+    <rect class="w4" x="206" y="252" width="24" height="24" fill="url(#win)"/>
+    <rect x="252" y="252" width="20" height="50" fill="#3b2a20"/>
+    <path d="M140 302 L310 302 L310 310 L140 310 Z" fill="#4a382c"/>
+  </g>
+
+  <!-- 楼前灯光 -->
+  <ellipse cx="216" cy="306" rx="66" ry="10" fill="url(#zglow)"/>
+
+  <!-- 红旗 -->
+  <g>
+    <rect x="368" y="196" width="3" height="110" fill="#4a3a2c"/>
+    <g class="flag">
+      <path d="M371 200 l72 12 -72 12 z" fill="#c8342b"/>
+      <path d="M378 206 l10 3 -10 3 z" fill="#f2dfa8" opacity="0.9"/>
+      <path d="M392 210 l9 2 -9 3 z" fill="#f2dfa8" opacity="0.8"/>
+      <path d="M378 214 l10 3 -10 3 z" fill="#f2dfa8" opacity="0.8"/>
+    </g>
+  </g>
+
+  <!-- 站立的红军剪影 -->
+  <g fill="#101820">
+    <g>
+      <circle cx="446" cy="262" r="8"/><rect x="437" y="270" width="18" height="40" rx="5"/>
+      <rect x="440" y="310" width="5" height="24"/><rect x="449" y="310" width="5" height="24"/>
+    </g>
+    <g>
+      <circle cx="492" cy="266" r="7.5"/><rect x="484" y="274" width="17" height="36" rx="5"/>
+      <rect x="487" y="310" width="5" height="24"/><rect x="495" y="310" width="5" height="24"/>
+    </g>
+    <g>
+      <circle cx="536" cy="264" r="8"/><rect x="527" y="272" width="18" height="38" rx="5"/>
+      <rect x="530" y="310" width="5" height="24"/><rect x="539" y="310" width="5" height="24"/>
+    </g>
+  </g>
+  <ellipse cx="492" cy="336" rx="120" ry="8" fill="#0b1119" opacity="0.55"/>
+</svg>
