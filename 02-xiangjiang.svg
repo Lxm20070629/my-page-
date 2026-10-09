@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360" role="img" aria-label="1934年11月至12月，红军血战湘江，突破第四道封锁线">
+  <title>血战湘江</title>
+  <defs>
+    <linearGradient id="xsky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1b0709"/><stop offset="0.5" stop-color="#4a0d10"/><stop offset="1" stop-color="#7a1a15"/>
+    </linearGradient>
+    <linearGradient id="xwater" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5e1410"/><stop offset="1" stop-color="#1c0607"/>
+    </linearGradient>
+    <radialGradient id="xmoon"><stop offset="0" stop-color="#ffb07a" stop-opacity="0.75"/><stop offset="1" stop-color="#ff6a3d" stop-opacity="0"/></radialGradient>
+    <radialGradient id="xfire"><stop offset="0" stop-color="#ffd08a" stop-opacity="0.95"/><stop offset="1" stop-color="#ff7a2f" stop-opacity="0"/></radialGradient>
+    <style>
+      @keyframes ember{0%{transform:translateY(0);opacity:0}25%{opacity:.9}100%{transform:translateY(-150px);opacity:0}}
+      @keyframes flick{0%,100%{opacity:.75;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
+      @keyframes churn{0%,100%{transform:translateX(0)}50%{transform:translateX(-10px)}}
+      .e1{animation:ember 4.2s linear infinite}
+      .e2{animation:ember 5.1s linear infinite 1.1s}
+      .e3{animation:ember 3.6s linear infinite 2.2s}
+      .e4{animation:ember 4.8s linear infinite .6s}
+      .e5{animation:ember 5.6s linear infinite 3s}
+      .fire{animation:flick 1.4s ease-in-out infinite;transform-origin:center}
+      .wave{animation:churn 5s ease-in-out infinite}
+      @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+    </style>
+  </defs>
+
+  <rect width="640" height="360" fill="url(#xsky)"/>
+  <circle cx="470" cy="104" r="110" fill="url(#xmoon)"/>
+  <circle cx="470" cy="104" r="30" fill="#ffb98a" opacity="0.85"/>
+  <g fill="#ffd9b0" opacity="0.5">
+    <circle cx="140" cy="60" r="1.5"/><circle cx="260" cy="40" r="1.2"/><circle cx="560" cy="52" r="1.4"/>
+  </g>
+
+  <!-- 对岸阵地剪影 -->
+  <path d="M0 176 L96 150 L184 178 L286 146 L392 180 L500 154 L640 176 L640 214 L0 214 Z" fill="#2a0a0b"/>
+  <g fill="#180506">
+    <path d="M120 176 l10 -1 0 -22 12 0 0 22 10 1 z"/>
+    <path d="M330 172 l10 -1 0 -20 12 0 0 20 10 1 z"/>
+    <path d="M520 176 l10 -1 0 -22 12 0 0 22 10 1 z"/>
+  </g>
+  <g class="fire">
+    <circle cx="252" cy="168" r="26" fill="url(#xfire)"/>
+    <circle cx="252" cy="170" r="8" fill="#ffe0a8"/>
+  </g>
+  <g class="fire" style="animation-delay:.7s">
+    <circle cx="446" cy="164" r="20" fill="url(#xfire)"/>
+    <circle cx="446" cy="166" r="6" fill="#ffe0a8"/>
+  </g>
+
+  <!-- 湘江水面 -->
+  <rect y="214" width="640" height="146" fill="url(#xwater)"/>
+  <g class="wave" stroke="#ff9a72" stroke-width="2" fill="none" opacity="0.5">
+    <path d="M0 244 Q58 234 116 244 T232 244 T348 244 T464 244 T580 244 T696 244"/>
+    <path d="M0 286 Q70 276 140 286 T280 286 T420 286 T560 286"/>
+  </g>
+  <g stroke="#ffd0b0" stroke-width="1.3" fill="none" opacity="0.3">
+    <path d="M0 264 Q58 256 116 264 T232 264 T348 264 T464 264 T580 264"/>
+  </g>
+
+  <!-- 江中涉水前进的队伍剪影 -->
+  <g fill="#120405">
+    <g>
+      <circle cx="188" cy="238" r="6"/><rect x="181" y="244" width="14" height="34" rx="4"/>
+      <rect x="196" y="228" width="2" height="52"/>
+    </g>
+    <g>
+      <circle cx="228" cy="246" r="6"/><rect x="221" y="252" width="14" height="32" rx="4"/>
+      <rect x="236" y="236" width="2" height="48"/>
+    </g>
+    <g>
+      <circle cx="268" cy="240" r="6"/><rect x="261" y="246" width="14" height="34" rx="4"/>
+    </g>
+    <g>
+      <circle cx="310" cy="250" r="6"/><rect x="303" y="256" width="14" height="30" rx="4"/>
+      <rect x="318" y="240" width="2" height="46"/>
+    </g>
+  </g>
+  <!-- 军旗 -->
+  <g>
+    <rect x="356" y="196" width="2.4" height="76" fill="#3a1a12"/>
+    <path d="M358 200 l34 9 -34 9 z" fill="#c8342b"/>
+  </g>
+  <!-- 涉水的白色水花 -->
+  <g stroke="#ffd9c0" stroke-width="1.6" opacity="0.5">
+    <path d="M176 280 q12 -6 24 0"/><path d="M216 288 q12 -6 24 0"/>
+    <path d="M258 282 q12 -6 24 0"/><path d="M300 292 q12 -6 24 0"/>
+  </g>
+
+  <!-- 飘散的火星 -->
+  <g fill="#ffcf8a">
+    <circle class="e1" cx="252" cy="176" r="2.2"/>
+    <circle class="e2" cx="446" cy="172" r="1.8"/>
+    <circle class="e3" cx="330" cy="186" r="2"/>
+    <circle class="e4" cx="150" cy="190" r="1.6"/>
+    <circle class="e5" cx="540" cy="182" r="1.8"/>
+  </g>
+</svg>
