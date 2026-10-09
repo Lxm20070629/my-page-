@@ -7,11 +7,12 @@
      3. 首屏 Canvas 星火粒子背景
      4. 首屏终端打字机效果
      5. 长征路线动画地图（Canvas 逐段绘制 + 节点联动）
-     6. 长征大事记时间轴
-     7. 长征精神翻转卡片 + Web Speech 语音讲解
-     8. 数据长征：数字滚动动画
-     9. 长征知识小自测
-    10. 滚动出现动画、主题切换与初始化
+     6. 长征大事记：十段史料 + 讲解视频
+     7. 讲解视频播放浮层
+     8. 长征精神翻转卡片 + 语音讲解
+     9. 数据长征：数字滚动动画
+    10. 长征知识小自测
+    11. 滚动出现动画、主题切换与初始化
 
    流畅度优化要点（v2）：
      · Canvas 静态底图（底色 / 地形 / 网格 / 比例尺）绘制一次后缓存到
@@ -26,6 +27,31 @@
    ============================================================ */
 (function () {
   'use strict';
+
+  /* 运行时报错自检：页面脚本一旦抛错，就在顶部显示一条提示条，
+     避免出现"点了没反应、用户完全不知道哪里坏了"的情况。
+     正式展示时若无报错，这个条不会出现。 */
+  function initErrorReporter() {
+    function show(msg, where) {
+      var bar = $('#errBar');
+      if (!bar) {
+        bar = document.createElement('div');
+        bar.id = 'errBar';
+        bar.className = 'err-bar';
+        var host = document.body || document.documentElement;
+        host.insertBefore(bar, host.firstChild);
+      }
+      bar.innerHTML = '<b>页面脚本执行出错</b><span>' + msg +
+        (where ? '（' + where + '）' : '') + '</span>' +
+        '<button type="button" onclick="this.parentNode.remove()">知道了</button>';
+    }
+    window.addEventListener('error', function (ev) {
+      show(String(ev.message || '未知错误'), (ev.filename || '').split('/').pop() + ':' + (ev.lineno || '?'));
+    });
+    window.addEventListener('unhandledrejection', function (ev) {
+      show('Promise 未捕获异常：' + (ev.reason && ev.reason.message ? ev.reason.message : ev.reason));
+    });
+  }
 
   /* ============================================================
      1. 基础工具与主题配色
@@ -291,157 +317,182 @@
   }
 
   /* ============================================================
-     4. 首屏终端打字机
+     4. 首屏 · 数字长征史料检索（可交互）
+     ------------------------------------------------------------
+     做成一个可点击的检索面板：左侧是检索项，点一下右侧就展出一段
+     史料。首屏默认把"行程总览"逐字打印出来，其余条目点击后即时切换。
+     文字全部为中文，不含任何英文命令行；标点使用 ASCII 竖线与半角
+     逗号——全角逗号（U+FF0C）在等宽字体里会撑出双倍空白、中点
+     （U+00B7）会显得像浮着的小点，二者都容易被误认为乱码。
      ============================================================ */
+  var ARCHIVE = [
+    {
+      id: 'route',
+      label: '行程总览',
+      icon: 'route',
+      lines: [
+        { t: 'hl', s: '二万五千里 | 十四省 | 十八座大山 | 二十四条大河' },
+        { t: 'out', s: '1934年10月出发, 1936年10月三大主力会师, 历时两年。' },
+        { t: 'out', s: '途经江西、福建、广东、湖南、广西、贵州、云南、四川、西康、甘肃、陕西等14省。' },
+        { t: 'out', s: '翻越18座大山, 跨越24条大河, 进行重要战役战斗600余次, 攻占县城700余座。' }
+      ]
+    },
+    {
+      id: 'start',
+      label: '出发地与集结',
+      icon: 'flag',
+      lines: [
+        { t: 'hl', s: '1934年10月 | 江西瑞金、于都' },
+        { t: 'out', s: '中央红军8.6万余人从江西瑞金、于都等地出发, 开始战略转移。' },
+        { t: 'out', s: '于都百姓拆下自家门板, 在河上架起浮桥, 送红军渡河。' },
+        { t: 'out', s: '为掩护主力转移, 红十军团等部北上抗日, 方志敏在战斗中被捕, 1935年8月就义。' }
+      ]
+    },
+    {
+      id: 'battle',
+      label: '重要战役与转折',
+      icon: 'star',
+      lines: [
+        { t: 'hl', s: '湘江血战 | 遵义会议 | 四渡赤水' },
+        { t: 'out', s: '1934年11月至12月, 红军在湘江两岸与敌血战, 突破第四道封锁线后由8.6万余人锐减至3万余人。' },
+        { t: 'out', s: '1935年1月, 遵义会议确立了毛泽东在党中央和红军的领导地位, 是党的历史上一个生死攸关的转折点。' },
+        { t: 'out', s: '此后四渡赤水、巧渡金沙江、强渡大渡河、飞夺泸定桥, 红军由被动转为主动。' }
+      ]
+    },
+    {
+      id: 'hard',
+      label: '雪山草地',
+      icon: 'snow',
+      lines: [
+        { t: 'hl', s: '夹金山 | 松潘草地' },
+        { t: 'out', s: '1935年6月起, 红军翻越夹金山等终年积雪的高山, 空气稀薄, 严寒刺骨。' },
+        { t: 'out', s: '8月穿越松潘草地, 泥沼遍布、粮尽水毒, 许多战士牺牲在草地上。' },
+        { t: 'out', s: '翻雪山、过草地, 是长征中最艰苦的一段行程。' }
+      ]
+    },
+    {
+      id: 'gather',
+      label: '会师与里程',
+      icon: 'meet',
+      lines: [
+        { t: 'hl', s: '1935年10月吴起镇 | 1936年10月会宁' },
+        { t: 'out', s: '1935年10月, 中央红军到达陕北吴起镇, 历时一年, 行程二万五千里。' },
+        { t: 'out', s: '1936年10月, 红军三大主力在甘肃会宁、静宁将台堡会师, 长征胜利结束。' },
+        { t: 'out', s: '二万五千里, 出自毛泽东1935年12月《论反对日本帝国主义的策略》。' }
+      ]
+    }
+  ];
+
+  var ARCHIVE_ICONS = {
+    route: '<path d="M4 18c4 0 4-12 8-12s4 12 8 12"/><circle cx="4" cy="18" r="1.8"/><circle cx="20" cy="18" r="1.8"/>',
+    flag: '<path d="M6 3v18"/><path d="M6 4h11l-2 3.5L17 11H6z"/>',
+    star: '<path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L3.3 9.4l6.1-.8z"/>',
+    snow: '<path d="M12 3v18M4.5 7.5l15 9M19.5 7.5l-15 9"/>',
+    meet: '<path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/>'
+  };
+
   function initTerminal() {
     var body = $('#terminalBody');
     if (!body) return;
-
-    var lines = [
-      { t: 'cmd', s: '$ ./long-march --route --search "瑞金"' },
-      { t: 'out', s: '&gt; 1934年10月，中央红军8.6万余人从江西瑞金、于都等地出发，踏上长征路。' },
-      { t: 'out', s: '&gt; 途经14省 · 翻越18座大山 · 跨越24条大河 · 行程约二万五千里。' },
-      { t: 'out', s: '&gt; <span class="hl">90 年后，这条路仍在被重新走一遍。</span>' }
-    ];
+    var opts = $('#queryOpts');
+    var label = $('#queryLabel');
 
     function plain(html) {
       return html.replace(/&gt;/g, '>').replace(/<[^>]+>/g, '');
     }
-    function escapeHtml(s) {
-      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    }
-    function renderStatic() {
-      body.innerHTML = lines.map(function (l) {
-        return '<p class="t-line ' + (l.t === 'cmd' ? '' : 't-out') + '">' +
-          (l.t === 'cmd' ? '<span class="t-prompt">$ </span>' + l.s.slice(2) : l.s) + '</p>';
+
+    /* 检索项按钮（类名用 arc- 前缀，避免与答题区 .q-opt 的浅底深字冲突） */
+    if (opts) {
+      opts.innerHTML = ARCHIVE.map(function (r, i) {
+        return '<button class="arc-opt' + (i === 0 ? ' is-active' : '') + '" type="button" ' +
+          'data-id="' + r.id + '" aria-pressed="' + (i === 0) + '">' +
+          '<span class="arc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" ' +
+            'stroke-linecap="round" stroke-linejoin="round">' + ARCHIVE_ICONS[r.icon] + '</svg></span>' +
+          '<span class="arc-txt">' + r.label + '</span></button>';
       }).join('');
     }
 
-    if (reduceMotion) { fitTerminalText(); renderStatic(); return; }
-
-    /* ---- 打字机 ----------------------------------------------------
-       节奏刻意压紧（全程约 2.5 秒），用户不必等太久就能看到完整输出，
-       也不会出现"只看到半行就停住"的错觉。
-
-       顺滑做法：整行字符一次性建好，未打出的部分先以暗色呈现，
-       打字时只翻转每个字符的 class（不重建 DOM、不引起重排），
-       所以盒子宽度从一开始就固定，逐字过程完全不抖动。 */
-    var SPEED = { cmd: 42, out: 15 };
-    var HOLD = { cmd: 240, out: 110 };
-
-    var li = 0, ci = 0, hl = -1;
-    var lastLine = null, lastChars = null;
-    var maxScroll = 0;
-
-    function measureScroll() {
-      maxScroll = Math.max(0, body.scrollHeight - (body.clientHeight || body.offsetHeight || 0));
+    /* 直接渲染（不带动画：用于减少动效偏好） */
+    function renderLines(lines) {
+      body.innerHTML = lines.map(function (l) {
+        return '<p class="t-line ' + (l.t === 'hl' ? 't-hl' : 't-out') + '">' + l.s + '</p>';
+      }).join('');
+      body.scrollTop = body.scrollHeight;
     }
 
-    function scrollToBottom() {
-      if (maxScroll > 0 && typeof body.scrollTop === 'number') body.scrollTop = maxScroll;
+    /* 逐字打印：整行字符一次性建好，未打印的部分先以暗色呈现，
+       打字时只翻转字符的样式类，行宽固定不抖动 */
+    var typeTimer = null;
+    function typeLines(lines) {
+      if (typeTimer) { window.clearTimeout(typeTimer); typeTimer = null; }
+      body.innerHTML = '';
+      var li = 0, ci = 0, spans = null, node = null;
+
+      function step() {
+        if (li >= lines.length) { typeTimer = null; return; }
+        var line = lines[li];
+        var text = plain(line.s);
+        if (ci === 0) {
+          node = document.createElement('p');
+          node.className = 't-line ' + (line.t === 'hl' ? 't-hl' : 't-out');
+          var caret = document.createElement('span');
+          caret.className = 'caret';
+          node.appendChild(caret);
+          spans = [];
+          for (var i = 0; i < text.length; i++) {
+            var sp = document.createElement('span');
+            sp.className = 'dim';
+            sp.textContent = text.charAt(i);
+            node.insertBefore(sp, caret);
+            spans.push(sp);
+          }
+          body.appendChild(node);
+          body.scrollTop = body.scrollHeight;
+        }
+        if (spans[ci]) spans[ci].className = '';
+        ci++;
+        if (ci < text.length) {
+          typeTimer = window.setTimeout(step, 22);
+        } else {
+          node.innerHTML = line.s;        // 整行完成，光标消失
+          body.scrollTop = body.scrollHeight;
+          li++; ci = 0;
+          typeTimer = window.setTimeout(step, 130);
+        }
+      }
+      step();
     }
 
-    /* 自适应字号：按"最长一行"所需宽度反推字号并夹在 10-14px 之间，
-       保证终端里每一行都能完整放下，手机上也不会被横向裁掉。
-       注意：测量必须用隐藏的临时元素，绝不能借用正文容器——那会清掉已打印的内容。 */
-    function fitTerminalText() {
-      var aw = body.clientWidth || body.offsetWidth;
-      if (!aw) return;
-      var cs = window.getComputedStyle ? window.getComputedStyle(body) : null;
-
-      var probe = document.createElement('p');
-      probe.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;' +
-        'margin:0;padding:0;border:0;white-space:nowrap;' +
-        'font-family:' + (cs && cs.fontFamily ? cs.fontFamily : 'monospace') + ';' +
-        'font-size:' + (cs && cs.fontSize ? cs.fontSize : '14px') + ';' +
-        'line-height:normal;letter-spacing:' + (cs && cs.letterSpacing ? cs.letterSpacing : 'normal') + ';';
-      body.appendChild(probe);
-
-      var maxW = 0;
-      for (var i = 0; i < lines.length; i++) {
-        probe.textContent = plain(lines[i].s);
-        maxW = Math.max(maxW, probe.offsetWidth);
+    function showRecord(i, animate) {
+      var rec = ARCHIVE[i];
+      if (!rec) return;
+      if (label) label.textContent = rec.label;
+      if (opts) {
+        Array.prototype.forEach.call(opts.children, function (b, k) {
+          b.classList.toggle('is-active', k === i);
+          b.setAttribute('aria-pressed', String(k === i));
+        });
       }
-      body.removeChild(probe);
-
-      var cur = cs ? parseFloat(cs.fontSize) : 14;
-      if (!cur) cur = 14;
-      if (maxW > aw) {
-        body.style.fontSize = Math.max(10, Math.min(14, cur * aw / maxW)) + 'px';
-      }
-      measureScroll();
-      scrollToBottom();
+      if (animate) typeLines(rec.lines); else renderLines(rec.lines);
     }
 
-    /* 把一行文字拆成逐字 span；需要高亮的目标文字在点亮时再加 hl 类 */
-    function buildLine(line, text) {
-      var p = document.createElement('p');
-      p.className = 't-line' + (line.t === 'cmd' ? '' : ' t-out');
-      if (line.t === 'cmd') {
-        var prompt = document.createElement('span');
-        prompt.className = 't-prompt';
-        prompt.textContent = '$ ';
-        p.appendChild(prompt);
-      }
-      var caret = document.createElement('span');
-      caret.className = 'caret';
-      p.appendChild(caret);
-
-      var spans = [];
-      for (var i = 0; i < text.length; i++) {
-        var sp = document.createElement('span');
-        sp.className = 'dim';
-        sp.textContent = text.charAt(i);
-        p.insertBefore(sp, caret);
-        spans.push(sp);
-      }
-      return { el: p, spans: spans, caret: caret };
+    /* 点击切换（事件委托，重绘后依然有效） */
+    if (opts) {
+      opts.addEventListener('click', function (e) {
+        var btn = e.target.closest ? e.target.closest('.arc-opt') : null;
+        if (!btn) return;
+        for (var i = 0; i < ARCHIVE.length; i++) {
+          if (ARCHIVE[i].id === btn.dataset.id) { showRecord(i, !reduceMotion); return; }
+        }
+      });
     }
 
-    /* 完成整行：用原始 HTML 替换，保留设计好的高亮样式 */
-    function finishLine(line, node) {
-      node.el.innerHTML = line.t === 'cmd'
-        ? '<span class="t-prompt">$ </span>' + escapeHtml(plain(line.s))
-        : line.s;
-    }
-
-    function type() {
-      if (li >= lines.length) return;
-      var line = lines[li];
-      var text = plain(line.s);
-
-      if (ci === 0) {
-        hl = text.indexOf('90 年后');
-        var built = buildLine(line, text);
-        lastLine = built;
-        lastChars = built.spans;
-        body.appendChild(built.el);
-        measureScroll();
-        scrollToBottom();
-      }
-
-      var sp = lastChars[ci];
-      if (sp) {
-        sp.className = (hl >= 0 && ci >= hl && ci < hl + 4) ? 'hl' : '';
-      }
-      ci++;
-
-      if (ci < text.length) {
-        window.setTimeout(type, SPEED[line.t] || 20);
-      } else {
-        finishLine(line, lastLine);
-        li++; ci = 0;
-        window.setTimeout(type, HOLD[line.t] || 120);
-      }
-    }
-
-    /* 进入视野后再开始，避免用户还没看到就播完 */
+    /* 首屏：进入视野后把默认条目逐字打印出来 */
     var started = false;
     function kick() {
       if (started) return;
       started = true;
-      fitTerminalText();                 // 先按最长一行定好字号，再开始打字
-      window.setTimeout(type, 400);
+      showRecord(0, !reduceMotion);
     }
     if ('IntersectionObserver' in window) {
       var io = new IntersectionObserver(function (entries) {
@@ -451,17 +502,6 @@
     } else {
       kick();
     }
-
-    /* 窗口尺寸变化后重新适配字号（防抖），保证换设备/转屏后仍然完整显示 */
-    var fitTimer = null;
-    window.addEventListener('resize', function () {
-      window.clearTimeout(fitTimer);
-      fitTimer = window.setTimeout(function () {
-        body.style.fontSize = '';         // 先回到样式表基准值再重新测量
-        fitTerminalText();
-        scrollToBottom();
-      }, 200);
-    });
   }
 
   /* ============================================================
@@ -1059,9 +1099,119 @@
   }
 
   /* ============================================================
-     6. 长征大事记时间轴（滚动进入时逐条点亮）
+     6. 长征大事记：十段史料 + 讲解视频
+     ------------------------------------------------------------
+     每段事记 = 原创插画（作视频封面）+ 日期 + 标题 + 史实 + 讲解视频。
+     视频来源在页面末尾"资料来源"区逐条列出；cite 字段就是那里的出处。
+     体积较大的视频一律 preload="none"：不点开就不下载，避免一进页面
+     就拖走上百 MB；关闭浮层时销毁 <video>，释放解码器与内存。
      ============================================================ */
+  var TIMELINE = [
+    {
+      date: '1934.10', title: '于都河畔，出发',
+      desc: '中央红军8.6万余人从江西瑞金、于都等地出发，开始战略转移。于都百姓拆下门板搭起浮桥，送红军渡河。',
+      poster: 'assets/media/01-yudu.svg',
+      video: { src: 'assets/media/01-yidu.mp4', cite: '来源待补充' }
+    },
+    {
+      date: '1934.11 — 12', title: '血战湘江',
+      desc: '为突破第四道封锁线，红军在湘江两岸与敌血战，付出极其惨重的代价。这一战让全党全军开始深刻反思"左"倾错误的危害。',
+      poster: 'assets/media/02-xiangjiang.svg',
+      video: { src: 'assets/media/02-xiangjiang.mp4', cite: '来源待补充' }
+    },
+    {
+      date: '1935.01', title: '遵义会议，伟大转折',
+      desc: '会议确立了毛泽东在党中央和红军的领导地位，在最危急关头挽救了党、挽救了红军、挽救了中国革命，是党的历史上一个生死攸关的转折点。',
+      poster: 'assets/media/03-zunyi.svg',
+      video: { src: 'assets/media/03-zunyi.mp4', cite: '来源待补充' }
+    },
+    {
+      date: '1935.01 — 05', title: '四渡赤水，神来之笔',
+      desc: '在川黔滇边界，红军四次渡过赤水河，忽东忽西、声东击西，牢牢掌握战场主动权，被称为长征中最精彩的一仗。',
+      poster: 'assets/media/04-chishui.svg',
+      video: { src: 'assets/media/04-chishui.mp4', cite: '来源待补充' }
+    },
+    {
+      date: '1935.05', title: '巧渡金沙江',
+      desc: '红军在皎平渡仅靠几只木船，用七天七夜渡过金沙江，把追兵远远甩在江南岸。',
+      poster: 'assets/media/05-jinsha.svg',
+      video: { src: 'assets/media/05-jinsha.mp4', cite: '来源待补充' }
+    },
+    {
+      date: '1935.05', title: '强渡大渡河 · 飞夺泸定桥',
+      desc: '十七名勇士驾小船冒着弹雨强渡大渡河；随后二十二名突击队员攀着十三根铁索夺下泸定桥，为全军打开北上通道。',
+      poster: 'assets/media/05-jinsha.svg',
+      video: { src: 'assets/media/05b-dadu-luding.mp4', cite: '来源待补充' }
+    },
+    {
+      date: '1935.06', title: '翻雪山',
+      desc: '红军翻越夹金山等终年积雪的高山，空气稀薄、严寒刺骨，战士们互相搀扶，翻过一座又一座雪山。',
+      poster: 'assets/media/06-xueshan.svg',
+      video: { src: 'assets/media/06-xueshan.mp4', cite: '来源待补充' }
+    },
+    {
+      date: '1935.08', title: '过草地',
+      desc: '穿越茫茫松潘草地，泥沼遍布、粮尽水毒。饥饿、寒冷与沼泽夺走了许多战士的生命，队伍依旧向北。',
+      poster: 'assets/media/06-xueshan.svg',
+      video: { src: 'assets/media/06b-caodi.mp4', cite: '来源待补充' }
+    },
+    {
+      date: '1935.10 — 1936.10', title: '到达陕北 · 三军会师',
+      desc: '1935年10月，中央红军到达陕北吴起镇；1936年10月，红军三大主力在甘肃会宁、静宁将台堡会师，宣告长征胜利结束。',
+      poster: 'assets/media/07-huining.svg',
+      video: { src: 'assets/media/07-huining.mp4', cite: '来源待补充' }
+    }
+  ];
+
+  var PLAY_ICON = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>';
+
+  function escapeAttr(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
   function initTimeline() {
+    var list = $('#timelineList');
+    if (!list) return;
+
+    list.innerHTML = TIMELINE.map(function (e, i) {
+      var media = '';
+      if (e.poster) {
+        var play = e.video && e.video.src
+          ? '<button class="tl-play" type="button" data-tl="' + i + '" ' +
+            'aria-label="播放讲解视频：' + escapeAttr(e.title) + '">' +
+            '<span class="tl-play-ico">' + PLAY_ICON + '</span>观看讲解视频</button>'
+          : '<span class="tl-novideo">暂无视频</span>';
+        media =
+          '<figure class="tl-media">' +
+            '<img src="' + escapeAttr(e.poster) + '" alt="' + escapeAttr(e.title + '：原创矢量插画') +
+              '" loading="lazy" decoding="async" width="640" height="360">' +
+            '<figcaption>' + play + '</figcaption>' +
+          '</figure>';
+      }
+      return '<li class="reveal">' +
+        '<div class="tl-node" aria-hidden="true"></div>' +
+        '<article class="tl-card">' + media +
+          '<div class="tl-body">' +
+            '<span class="tl-date">' + e.date + '</span>' +
+            '<h3>' + e.title + '</h3>' +
+            '<p>' + e.desc + '</p>' +
+          '</div>' +
+        '</article>' +
+      '</li>';
+    }).join('');
+
+    /* 渲染视频来源清单（页面末尾"资料来源"区） */
+    var srcList = $('#videoSources');
+    if (srcList) {
+      srcList.innerHTML = TIMELINE.map(function (e, i) {
+        var cite = (e.video && e.video.cite) ? e.video.cite : '来源待补充';
+        return '<li><span class="src-name">' + String(i).padStart(2, '0') + ' ' + e.title + '</span>' +
+          '<span class="src-meta">' + cite + '</span></li>';
+      }).join('');
+    }
+
+    /* 逐条点亮 */
     var items = $$('#timelineList > li');
     if (!items.length) return;
     if (reduceMotion || !('IntersectionObserver' in window)) {
@@ -1081,7 +1231,94 @@
   }
 
   /* ============================================================
-     7. 长征精神翻转卡片 + 语音讲解
+     7. 讲解视频播放浮层
+     ------------------------------------------------------------
+     · 只在点击时创建 <video> 并设置 src：不点开就一个字节都不下载，
+       十个视频合计上百 MB，预载会让页面直接卡死；
+     · 关闭时移除 src 并销毁元素，释放解码器与内存；
+     · 底部显示该段的来源标注，与页面末尾的"资料来源"区对应。
+     ============================================================ */
+  function initMediaPlayer() {
+    var modal = $('#mediaModal');
+    if (!modal) return;
+    var body = $('#mediaBody');
+    var titleEl = $('#mediaTitle');
+    var srcEl = $('#mediaSource');
+    var lastFocus = null;
+
+    function close() {
+      var v = body.querySelector ? body.querySelector('video') : null;
+      if (v) {
+        try { v.pause(); } catch (err) {}
+        try { v.removeAttribute('src'); v.load && v.load(); } catch (err) {}
+      }
+      body.innerHTML = '';
+      modal.hidden = true;
+      document.documentElement.style.overflow = '';
+      if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (err) {} }
+    }
+
+    function open(i, btn) {
+      var item = TIMELINE[i];
+      if (!item || !item.video || !item.video.src) return;
+      lastFocus = btn || null;
+      if (titleEl) titleEl.textContent = item.title;
+      if (srcEl) srcEl.textContent = item.video.cite || '来源待补充';
+
+      /* 先把弹层显示出来，再填内容：即使后续某一步出错，
+         用户也能用关闭按钮退出，不会卡在打不开又关不掉的死局里 */
+      modal.hidden = false;
+      document.documentElement.style.overflow = 'hidden';
+
+      body.innerHTML =
+        '<div class="mm-stage">' +
+          '<video class="mm-video" src="' + escapeAttr(item.video.src) + '" controls autoplay ' +
+            'playsinline preload="metadata"></video>' +
+          '<div class="mm-loading">视频加载中…</div>' +
+        '</div>';
+
+      var v = body.querySelector('video');
+      var load = body.querySelector('.mm-loading');
+      if (v) {
+        v.addEventListener('loadeddata', function () { if (load) load.hidden = true; });
+        v.addEventListener('playing', function () { if (load) load.hidden = true; });
+        v.addEventListener('error', function () {
+          if (load) load.innerHTML = '视频无法播放。<br>请确认文件已放入 源码/assets/media/ 目录，或用本地预览服务器打开。';
+        });
+        /* 保险：8 秒后仍未播起来，直接给出提示，不让用户对着黑屏干等 */
+        window.setTimeout(function () {
+          if (load && !load.hidden && v.readyState < 2) {
+            load.innerHTML = '视频仍在加载或无法播放。<br>若持续如此，请用本地预览服务器打开页面。';
+          }
+        }, 8000);
+      }
+      var cb = $('.mm-close', modal);
+      if (cb && cb.focus) { try { cb.focus(); } catch (err) {} }
+    }
+
+    /* 用捕获阶段监听：即使弹层内部有元素吞掉了冒泡，关闭依然有效 */
+    document.addEventListener('click', function (ev) {
+      var t = ev.target;
+      var play = t && t.closest ? t.closest('.tl-play') : null;
+      if (play) { open(Number(play.dataset.tl), play); return; }
+      if (t && t.closest && t.closest('[data-close]')) close();
+    }, true);
+
+    document.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Escape' && !modal.hidden) close();
+    });
+
+    /* 双保险：直接挂在关闭按钮与遮罩上，不依赖事件委托 */
+    $$('[data-close]', modal).forEach(function (el) {
+      el.addEventListener('click', function (ev) {
+        if (ev && ev.stopPropagation) ev.stopPropagation();
+        close();
+      });
+    });
+  }
+
+  /* ============================================================
+     8. 长征精神翻转卡片 + 语音讲解
      ============================================================ */
   var SPIRIT = [
     {
@@ -1223,7 +1460,7 @@
   }
 
   /* ============================================================
-     8. 数据长征：数字滚动
+     9. 数据长征：数字滚动
      ============================================================ */
   function initCounters() {
     var nodes = $$('.count');
@@ -1258,7 +1495,7 @@
   }
 
   /* ============================================================
-     9. 长征知识小自测
+    10. 长征知识小自测
      ============================================================ */
   var QUIZ = [
     {
@@ -1362,13 +1599,23 @@
   }
 
   /* ============================================================
-     10. 滚动出现动画、主题切换与初始化
+     11. 滚动出现动画、主题切换与初始化
      ============================================================ */
+  /* 滚动出现动画。
+     注意：内容绝不能长期停在"半透明 / 位移"状态——预览面板、整页截图、
+     生成 PDF 或按 Ctrl+P 打印时，屏外元素不会触发出场动画，会一直看不清。
+     所以这里给整批元素加一道 2.6 秒兜底：到点无论是否进入过视口都强制显示。
+     正常滚动浏览时用户感知不到差别，屏外渲染也不会残留半透明。 */
   function initReveal() {
     var els = $$('.reveal');
     if (!els.length) return;
-    if (reduceMotion || !('IntersectionObserver' in window)) {
+
+    function forceAll() {
       els.forEach(function (el) { el.classList.add('is-visible'); });
+    }
+
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      forceAll();
       return;
     }
     var io = new IntersectionObserver(function (entries) {
@@ -1377,6 +1624,9 @@
       });
     }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
     els.forEach(function (el) { io.observe(el); });
+
+    window.setTimeout(forceAll, 2600);                  // 兜底：到点全部显示
+    window.addEventListener('beforeprint', forceAll);   // 打印 / 另存 PDF 前全部显示
   }
 
   function initTheme() {
@@ -1412,6 +1662,7 @@
   }
 
   function init() {
+    initErrorReporter();
     initTheme();
     initNav();
     initHeroCanvas();
@@ -1419,6 +1670,7 @@
     initTerminal();
     initRouteMap();
     initTimeline();
+    initMediaPlayer();
     initSpirit();
     initCounters();
     initQuiz();

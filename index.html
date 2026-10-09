@@ -33,6 +33,7 @@
       <a href="#spirit">长征精神</a>
       <a href="#data">数据长征</a>
       <a href="#quiz">知识自测</a>
+      <a href="#sources">资料来源</a>
     </nav>
 
     <div class="nav-tools">
@@ -53,6 +54,7 @@
       <a href="#spirit">长征精神</a>
       <a href="#data">数据长征</a>
       <a href="#quiz">知识自测</a>
+      <a href="#sources">资料来源</a>
     </div>
   </div>
   <div class="progress" id="progressBar" aria-hidden="true"></div>
@@ -89,18 +91,22 @@
         <a class="btn" href="#spirit">读懂长征精神</a>
       </div>
 
-      <!-- 终端卡片：AI 启初心 -->
-      <div class="terminal" id="terminal" role="img"
-           aria-label="数字化长征命令终端：检索瑞金出发，返回一九三四年十月，中央红军八点六万人踏上长征路">
+      <!-- 史料检索面板：可点击切换条目，呼应"AI 启初心" -->
+      <div class="terminal" id="terminal" role="group"
+           aria-label="数字长征史料检索面板：点击左侧检索项，右侧展出一段长征史料">
         <div class="terminal-bar">
           <span class="t-dot"></span><span class="t-dot"></span><span class="t-dot"></span>
-          <span class="t-name">changan@ai-college: ~/long-march-90</span>
+          <span class="t-name">数字长征史料检索</span>
+          <span class="t-now" id="queryLabel">行程总览</span>
         </div>
-        <div class="terminal-body" id="terminalBody">
-          <noscript>
-            <p class="t-line"><span class="t-prompt">$</span> <span class="t-cmd">./long-march --search "瑞金"</span></p>
-            <p class="t-out">&gt; 1934年10月，中央红军8.6万余人从江西瑞金等地出发，踏上长征路。</p>
-          </noscript>
+        <div class="terminal-main">
+          <div class="query-opts" id="queryOpts" role="group" aria-label="检索项"></div>
+          <div class="terminal-body" id="terminalBody">
+            <noscript>
+              <p class="t-hl">二万五千里 | 十四省 | 十八座大山 | 二十四条大河</p>
+              <p class="t-out">1934年10月出发, 1936年10月三大主力会师, 历时两年。</p>
+            </noscript>
+          </div>
         </div>
       </div>
 
@@ -123,10 +129,10 @@
   <section class="section" id="route">
     <div class="wrap">
       <header class="sec-head reveal">
-        <p class="eyebrow">Canvas 动态路线图</p>
+        <p class="eyebrow">动态路线图</p>
         <h2>一条走了两年的路</h2>
         <p class="sec-desc">
-          下面这张路线图由 Canvas 逐段绘制，红点走过的地方，就是红军真实走过的方向。
+          下面这张路线图由数字绘图技术逐段绘制，红点走过的地方，就是红军真实走过的方向。
           点击右侧任一节点，可以跳到那一段历史。
         </p>
       </header>
@@ -172,69 +178,85 @@
       <header class="sec-head reveal">
         <p class="eyebrow">时间轴</p>
         <h2>长征大事记</h2>
-        <p class="sec-desc">从于都河畔的告别，到会宁城下的会师，七个坐标，标注一支军队的两年。</p>
+        <p class="sec-desc">
+          九段坐标，标注一支军队的两年。每段都配一段讲解视频与一幅原创插画，
+          点击封面上的按钮即可在页面内观看。
+        </p>
       </header>
 
-      <ol class="timeline" id="timelineList">
-        <li class="reveal">
-          <div class="tl-node" aria-hidden="true"></div>
-          <div class="tl-card">
-            <span class="tl-date">1934.10</span>
-            <h3>于都河畔，出发</h3>
-            <p>中央红军8.6万余人从江西瑞金、于都等地出发，开始战略转移。于都百姓拆下门板搭起浮桥，送红军渡河。</p>
-          </div>
-        </li>
-        <li class="reveal">
-          <div class="tl-node" aria-hidden="true"></div>
-          <div class="tl-card">
-            <span class="tl-date">1934.11 — 12</span>
-            <h3>血战湘江</h3>
-            <p>为突破第四道封锁线，红军在湘江两岸与敌血战，付出极其惨重的代价。这一战让全党全军开始深刻反思"左"倾错误的危害。</p>
-          </div>
-        </li>
-        <li class="reveal">
-          <div class="tl-node" aria-hidden="true"></div>
-          <div class="tl-card">
-            <span class="tl-date">1935.01</span>
-            <h3>遵义会议，伟大转折</h3>
-            <p>会议确立了毛泽东在党中央和红军的领导地位，在最危急关头挽救了党、挽救了红军、挽救了中国革命，是党的历史上一个生死攸关的转折点。</p>
-          </div>
-        </li>
-        <li class="reveal">
-          <div class="tl-node" aria-hidden="true"></div>
-          <div class="tl-card">
-            <span class="tl-date">1935.01 — 05</span>
-            <h3>四渡赤水，神来之笔</h3>
-            <p>在川黔滇边界，红军四次渡过赤水河，忽东忽西、声东击西，牢牢掌握战场主动权，被称为长征中最精彩的一仗。</p>
-          </div>
-        </li>
-        <li class="reveal">
-          <div class="tl-node" aria-hidden="true"></div>
-          <div class="tl-card">
-            <span class="tl-date">1935.05</span>
-            <h3>巧渡金沙江 · 强渡大渡河 · 飞夺泸定桥</h3>
-            <p>红军在皎平渡用七天七夜渡过金沙江，甩开追兵；随后强渡大渡河，二十二名突击队员冒着弹雨攀铁索夺下泸定桥，为全军打开通道。</p>
-          </div>
-        </li>
-        <li class="reveal">
-          <div class="tl-node" aria-hidden="true"></div>
-          <div class="tl-card">
-            <span class="tl-date">1935.06 — 09</span>
-            <h3>翻雪山，过草地</h3>
-            <p>红军翻越夹金山等终年积雪的高山，穿越茫茫水草地。缺氧、严寒、饥饿与沼泽夺走了许多战士的生命，队伍依旧向北。</p>
-          </div>
-        </li>
-        <li class="reveal">
-          <div class="tl-node" aria-hidden="true"></div>
-          <div class="tl-card">
-            <span class="tl-date">1935.10 — 1936.10</span>
-            <h3>到达陕北 · 三军会师</h3>
-            <p>1935年10月，中央红军到达陕北吴起镇；1936年10月，红军三大主力在甘肃会宁、静宁将台堡会师，宣告长征胜利结束。</p>
-          </div>
-        </li>
-      </ol>
+      <ol class="timeline" id="timelineList"></ol>
     </div>
   </section>
+
+  <!-- ============ 视频资料来源 ============ -->
+  <section class="section section-alt" id="sources">
+    <div class="wrap">
+      <header class="sec-head reveal">
+        <p class="eyebrow">资料来源</p>
+        <h2>视频与史实资料来源</h2>
+        <p class="sec-desc">
+          本页文字史实与数据依据权威党史文献整理；讲解视频的出处逐条列明如下，
+          版权归原发布方所有，本页仅用于主题党日活动的教学展示。
+        </p>
+      </header>
+
+      <div class="src-grid">
+        <div class="src-card reveal">
+          <h3>一、文字史实与数据</h3>
+          <ul class="src-list">
+            <li><span class="src-name">《中国共产党简史》</span>人民出版社、中共党史出版社，2021 年</li>
+            <li><span class="src-name">中共中央党史和文献研究院</span>关于长征历史的权威表述</li>
+            <li><span class="src-name">毛泽东《论反对日本帝国主义的策略》</span>1935 年 12 月，"二万五千里"的出处</li>
+            <li><span class="src-name">长征精神五条内涵</span>采用权威文献的完整表述，未作删改</li>
+          </ul>
+          <p class="src-note">
+            路线图为教学示意，站点按真实经纬度投影绘制，未展开省界与地形细节；
+            里程、山川、战斗次数等均采用党史通行表述。
+          </p>
+        </div>
+
+        <div class="src-card reveal">
+          <h3>二、讲解视频来源</h3>
+          <ul class="src-list" id="videoSources">
+            <li class="src-note">（正在加载视频来源清单…）</li>
+          </ul>
+          <p class="src-note">
+            视频版权归原发布方所有，本页未作任何剪辑篡改，转载如有不当请联系删除。
+          </p>
+        </div>
+
+        <div class="src-card reveal">
+          <h3>三、本页原创内容</h3>
+          <ul class="src-list">
+            <li><span class="src-name">长征路线动态图</span>基于公开地理坐标自主绘制的教学示意图</li>
+            <li><span class="src-name">大事记插画 7 幅</span>本队原创矢量插画，含轻微动效，不作为历史影像使用</li>
+            <li><span class="src-name">页面代码与交互</span>原生 HTML5 + CSS3 + JavaScript 编写，未使用第三方素材库</li>
+            <li><span class="src-name">语音讲解</span>调用浏览器内置语音合成，朗读内容为长征精神权威表述</li>
+          </ul>
+          <p class="src-note">
+            除标明来源的讲解视频外，本页未使用其他来源不明的图片、视频或字体资源。
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 视频播放浮层 ============ -->
+  <div class="media-modal" id="mediaModal" hidden role="dialog" aria-modal="true" aria-labelledby="mediaTitle">
+    <div class="mm-backdrop" data-close></div>
+    <div class="mm-panel" role="document">
+      <header class="mm-head">
+        <h3 id="mediaTitle">讲解视频</h3>
+        <button class="mm-close" type="button" data-close aria-label="关闭播放窗口">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </header>
+      <div class="mm-body" id="mediaBody"></div>
+      <footer class="mm-foot">
+        <p class="mm-source" id="mediaSource"></p>
+      </footer>
+    </div>
+  </div>
 
   <!-- ============ 长征精神 ============ -->
   <section class="section" id="spirit">
@@ -244,7 +266,7 @@
         <h2>长征精神的五个维度</h2>
         <p class="sec-desc">
           点击卡片翻面，看长征精神的完整表述；再点小喇叭，可以让浏览器把这段文字读出来——
-          这是本页的 AI 语音讲解功能。
+          这是本页的语音讲解功能。
         </p>
       </header>
 
