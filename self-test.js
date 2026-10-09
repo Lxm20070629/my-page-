@@ -145,8 +145,9 @@ const stubCtx = {
 /* ---------- 文档打桩：按 id / 选择器返回预置元素 ---------- */
 const IDS = ['nav', 'progressBar', 'toTop', 'menuBtn', 'mobileMenu', 'navLinks', 'heroCanvas',
   'terminalBody', 'queryOpts', 'queryLabel', 'routeCanvas', 'routeList', 'mapTip', 'mapCaption',
-  'playBtn', 'playLabel', 'resetBtn', 'timelineList', 'spiritGrid', 'quizForm', 'quizBody',
-  'quizResult', 'themeBtn', 'hero', 'route', 'timeline', 'spirit', 'data', 'quiz', 'about'];
+  'playBtn', 'playLabel', 'resetBtn', 'timelineList', 'forcesBody', 'battleGrid', 'youthGrid',
+  'siteList', 'spiritGrid', 'quizForm', 'quizBody', 'quizResult', 'themeBtn',
+  'hero', 'route', 'timeline', 'forces', 'battles', 'youth', 'sites', 'spirit', 'data', 'quiz', 'about'];
 const els = {};
 IDS.forEach(id => { els['#' + id] = new El('div', id); });
 els['#heroCanvas'].parentElement = new El('section');
@@ -280,6 +281,62 @@ async function assertAll() {
   } else {
     bad('检索项没有注册点击事件，交互失效');
   }
+
+  // 2b. 每个板块都必须真的渲染出内容（线上曾出现"JS 中途抛错，
+  //     大事记/精神卡片/答题全部空白"的严重问题）
+  const timelineEl = document.getElementById('timelineList');
+  const tlItems = timelineEl ? (timelineEl.innerHTML.match(/class="tl-card"/g) || []).length : 0;
+  if (tlItems === 9) ok('大事记渲染 9 段卡片');
+  else bad('大事记渲染异常：' + tlItems + ' 段（应为 9 段）');
+  if (timelineEl && !/\.mp4|tl-play|videoSources/.test(timelineEl.innerHTML)) {
+    ok('大事记卡片为纯文字（无视频引用）');
+  } else {
+    bad('大事记卡片仍含视频相关元素');
+  }
+
+  const sgEl = document.getElementById('spiritGrid');
+  const sgItems = sgEl ? (sgEl.innerHTML.match(/class="spirit-card/g) || []).length : 0;
+  if (sgItems === 5) ok('精神卡片渲染 5 张');
+  else bad('精神卡片未渲染：' + sgItems + ' 张');
+
+  // 2c. 新增的四个板块也必须渲染出内容
+  const fbEl = document.getElementById('forcesBody');
+  const fbRows = fbEl ? (fbEl.innerHTML.match(/<tr>/g) || []).length : 0;
+  if (fbRows === 4) ok('四路红军表渲染 4 行');
+  else bad('四路红军表未渲染：' + fbRows + ' 行');
+
+  const bgEl = document.getElementById('battleGrid');
+  const bgItems = bgEl ? (bgEl.innerHTML.match(/class="battle-card/g) || []).length : 0;
+  if (bgItems === 5) ok('重要战斗渲染 5 张卡片');
+  else bad('重要战斗未渲染：' + bgItems + ' 张');
+
+  const ygEl = document.getElementById('youthGrid');
+  const ygItems = ygEl ? (ygEl.innerHTML.match(/class="youth-card/g) || []).length : 0;
+  if (ygItems === 4) ok('青春的长征渲染 4 张卡片');
+  else bad('青春的长征未渲染：' + ygItems + ' 张');
+
+  const slEl = document.getElementById('siteList');
+  const slItems = slEl ? (slEl.innerHTML.match(/<li[ >]/g) || []).length : 0;
+  if (slItems === 12) ok('遗址与纪念地渲染 12 条');
+  else bad('遗址与纪念地未渲染：' + slItems + ' 条');
+
+  const qbEl = document.getElementById('quizBody');
+  const qbItems = qbEl ? (qbEl.innerHTML.match(/class="q-item"/g) || []).length : 0;
+  if (qbItems === 5) ok('答题题目渲染 5 题');
+  else bad('答题题目未渲染：' + qbItems + ' 题');
+
+  // 2d. 模块级容错：每个 init 都应被 safeInit 包裹
+  const safeCalls = (code.match(/safeInit\('/g) || []).length;
+  if (safeCalls >= 12) ok('各模块均已用 safeInit 包裹（共 ' + safeCalls + ' 处），单点故障不会拖垮整页');
+  else bad('safeInit 包裹不足：仅 ' + safeCalls + ' 处');
+
+  // 2e. 视频功能必须已彻底移除
+  const htmlSrc = require('fs').readFileSync(
+    require('path').join(__dirname, '..', 'index.html'), 'utf8');
+  const gone = ['mediaModal', 'videoSources', 'tl-play', 'initMediaPlayer'];
+  const still = gone.filter(k => htmlSrc.includes(k) || code.includes(k));
+  if (!still.length) ok('视频功能已彻底移除（页面与脚本均无残留）');
+  else bad('视频功能仍有残留：' + still.join('、'));
 
   // 2. 路线节点列表：12 项
   const routeItems = routeListEl ? (routeListEl.innerHTML.match(/class="route-item/g) || []).length : 0;

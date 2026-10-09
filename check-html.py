@@ -68,8 +68,8 @@ for r in set(p.srcs):
     else:
         problems.append("资源缺失：%s" % r)
 
-# 时间轴现在由 script.js 的 TIMELINE 数据驱动渲染（HTML 里只留空容器），
-# 因此改为核对数据表：段数、每段视频文件、封面文件是否真实存在。
+# 时间轴由 script.js 的 TIMELINE 数据驱动渲染（HTML 里只留空容器），
+# 核对数据表的段数与文字完整性。
 js_text = ""
 js_path = os.path.join(ROOT, "script.js")
 if os.path.exists(js_path):
@@ -81,40 +81,64 @@ if not tl_block:
 else:
     data = tl_block.group(1)
     titles = re.findall(r"title: '([^']+)'", data)
-    videos = re.findall(r"src: '([^']*\.mp4)'", data)
-    posters = re.findall(r"poster: '([^']+)'", data)
-    cites = re.findall(r"cite: '([^']*)'", data)
+    dates = re.findall(r"date: '([^']+)'", data)
+    descs = re.findall(r"desc: '([^']*)'", data)
     if len(titles) < 9:
         problems.append("大事记段数不足：%d 段（应为 9 段）" % len(titles))
     else:
-        notes.append("大事记共 %d 段，与讲解视频一一对应" % len(titles))
-
-    missing_v = [v for v in videos if not os.path.exists(os.path.join(ROOT, v))]
-    missing_p = [p for p in posters if not os.path.exists(os.path.join(ROOT, p))]
-    if missing_v:
-        problems.append("以下视频文件不存在：" + ", ".join(missing_v))
-    elif videos:
-        total = sum(os.path.getsize(os.path.join(ROOT, v)) for v in videos)
-        notes.append("讲解视频 %d 个文件全部就位，合计 %.1f MB" % (len(videos), total / 1048576))
-    if missing_p:
-        problems.append("以下封面图不存在：" + ", ".join(missing_p))
-    elif posters:
-        notes.append("视频封面（原创插画）%d 张全部就位" % len(set(posters)))
-
-    if len(videos) < len(titles):
-        problems.append("有 %d 段事记没有配视频" % (len(titles) - len(videos)))
-    if any('待补充' in c for c in cites):
-        notes.append('提示：仍有 %d 条视频来源写着"待补充"，提交前需补齐' %
-                     sum(1 for c in cites if '待补充' in c))
+        notes.append("大事记共 %d 段（日期 %d、标题 %d、叙述 %d）"
+                     % (len(titles), len(dates), len(titles), len(descs)))
+    empty = [t for t, d in zip(titles, descs + [''] * len(titles)) if not d.strip()]
+    if empty:
+        problems.append("以下事记缺少叙述文字：" + ", ".join(empty))
     else:
-        notes.append("视频来源均已标注")
+        notes.append("每段事记都有完整叙述文字")
 
-# 播放浮层与来源区必须在页面里
-for key, desc in [('id="mediaModal"', '视频播放浮层'), ('id="videoSources"', '视频来源清单容器')]:
-    if key not in src:
-        problems.append("页面缺少 %s（%s）" % (desc, key))
+    if '.mp4' in data:
+        problems.append("TIMELINE 数据里仍残留视频文件引用")
     else:
-        notes.append("页面已包含%s" % desc)
+        notes.append("大事记已不含任何视频引用（纯文字时间轴）")
+
+# 新增的四个板块：容器必须在页面里，数据表必须有内容
+section_checks = [
+    ('id="forces"', 'forcesBody', 'FORCES', 4, '四路红军'),
+    ('id="battles"', 'battleGrid', 'BATTLES', 5, '重要战斗'),
+    ('id="youth"', 'youthGrid', 'YOUTH', 4, '青春的长征'),
+    ('id="sites"', 'siteList', 'SITES', 12, '遗址与纪念地'),
+]
+for sec_id, holder, table, expect, label in section_checks:
+    if sec_id not in src:
+        problems.append("页面缺少板块 %s（%s）" % (label, sec_id))
+        continue
+    if ('id="%s"' % holder) not in src:
+        problems.append("板块 %s 缺少渲染容器 #%s" % (label, holder))
+        continue
+    blk = re.search(r'var ' + table + r' = \[(.*?)\n  \];', js_text, re.S)
+    if not blk:
+        problems.append("script.js 缺少数据表 %s" % table)
+        continue
+    n = len(re.findall(r"\{\s*(?:name|date|num):", blk.group(1)))
+    if n < expect:
+        problems.append("%s 数据条目不足：%d 条（应为 %d 条）" % (label, n, expect))
+    else:
+        notes.append("%s 板块就位，数据 %d 条" % (label, n))
+
+# 视频相关残留检查：撤掉视频功能后，这些痕迹都不应存在
+leftovers = []
+for f, keys in [(js_path, ['initMediaPlayer', 'videoSources', 'tl-play', 'assets/media']),
+                (os.path.join(ROOT, "index.html"), ['mediaModal', 'videoSources', 'id="sources"', 'tl-play']),
+                (css_path if 'css_path' in dir() else os.path.join(ROOT, "style.css"),
+                 ['.mm-', '.tl-play', '.tl-media', 'media-modal'])]:
+    if not os.path.exists(f):
+        continue
+    txt = io.open(f, encoding="utf-8").read()
+    for k in keys:
+        if k in txt:
+            leftovers.append("%s 中的 %s" % (os.path.basename(f), k))
+if leftovers:
+    problems.append("视频功能残留：" + "；".join(leftovers))
+else:
+    notes.append("视频功能已彻底移除（脚本 / 页面 / 样式均无残留）")
 
 # 浅色底组件绝不能被设成浅色文字（曾把首屏的浅金文字套到浅色答题卡上，
 # 选项几乎看不见）。这里对答题区与正文区的类逐条检查其 color 取值。
